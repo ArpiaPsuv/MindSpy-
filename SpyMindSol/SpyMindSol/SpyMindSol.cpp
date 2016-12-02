@@ -6,4 +6,5 @@ int APIENTRY wWinMain(
 	LPWSTR    lpCmdLine,
 	int       nCmdShow)
 {
+	return 0;
 }
