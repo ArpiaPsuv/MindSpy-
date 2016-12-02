@@ -7,4 +7,5 @@ int APIENTRY wWinMain(
 	int       nCmdShow)
 {
 	return 0;
+	
 }
