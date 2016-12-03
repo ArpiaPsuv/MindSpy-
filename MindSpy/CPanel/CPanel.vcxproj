@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{89B22839-72F7-429E-86AB-9119D6E027BE}</ProjectGuid>
+    <ProjectGuid>{2D4884CE-636A-401D-A4FA-D7180F4F550D}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>Cliente</RootNamespace>
+    <RootNamespace>CPanel</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -140,13 +140,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Cliente.h" />
-    <ClInclude Include="Conector.h" />
-    <ClInclude Include="Datos.h" />
+    <ClInclude Include="CPanel.h" />
+    <ClInclude Include="Servidor.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Cliente.cpp" />
-    <ClCompile Include="Conector.cpp" />
+    <ClCompile Include="CPanel.cpp" />
+    <ClCompile Include="Servidor.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

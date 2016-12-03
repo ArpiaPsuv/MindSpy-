@@ -1,19 +1,18 @@
 #include "Cliente.h"
-int APIENTRY wWinMain(HINSTANCE hInstance,
-                     HINSTANCE hPrevInstance,
-                     LPWSTR    lpCmdLine,
-                     int       nCmdShow)
+//int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR    lpCmdLine, int nCmdShow)
+int main()
 {
 	Conector cn;
-	bool r = cn.Conectar("127.0.0.1", 1024);
+	char buffer[1024];
+	bool r = cn.Conectar("127.0.0.1", 9900);
 
 	if (!r) return 1;
 
-	r = cn.EnviarComando(Datos(MENSAJE, "Hola server!"));
-	int error;
-	if (!r)
+	while (true)
 	{
-		error = WSAGetLastError();
+		cin.getline(buffer, 1024, '\n');
+		r = cn.EnviarComando(buffer);
 	}
+	
 	return 0;
 }

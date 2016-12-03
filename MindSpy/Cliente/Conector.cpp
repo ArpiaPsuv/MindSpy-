@@ -8,6 +8,7 @@ namespace MindSpy
 	}
 
 	Conector::~Conector() {
+		closesocket(sckt);
 	}
 
 	bool Conector::Conectar(string IP, UINT32 Puerto)
@@ -15,30 +16,11 @@ namespace MindSpy
 		server.sin_addr.s_addr = inet_addr(IP.c_str());
 		server.sin_family = AF_INET;
 		server.sin_port = htons(Puerto);
-		if (connect(sckt, (sockaddr*)&server, sizeof(server)) != SOCKET_ERROR)
-		{
-			return send(sckt, "1", 2, 0) != SOCKET_ERROR;
-		}
-		return false;
-	}
-	bool Conector::EnviarComando(Datos datos)
-	{
-		if (!datos.data)
-			return false;
+		return connect(sckt, (sockaddr*)&server, sizeof(server)) != SOCKET_ERROR;
 		
-		if (datos.Tipo == MENSAJE)
-			return send(sckt, datos.data, strlen(datos.data), 0) != SOCKET_ERROR;
-
-		itoa(datos.Tipo, msg, 1000);
-		send(sckt, msg, sizeof(DWORD), 0);
-
-		switch(datos.Tipo)
-		{
-		case FICHEROS: 
-			return !send(sckt, datos.data, sizeof(Fichero), 0);
-
-		default:
-			return false;
-		}
+	}
+	bool Conector::EnviarComando(char* cmd)
+	{
+		return send(sckt, cmd, strlen(cmd)+1, 0) != SOCKET_ERROR;
 	}
 };

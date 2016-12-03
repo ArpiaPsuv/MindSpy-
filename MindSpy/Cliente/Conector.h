@@ -17,6 +17,6 @@ namespace MindSpy
 		Conector();
 		~Conector();
 		bool Conectar(string IP, UINT32 Puerto);
-		bool EnviarComando(Datos datos);
+		bool EnviarComando(char* cmd);
 	};
 }
