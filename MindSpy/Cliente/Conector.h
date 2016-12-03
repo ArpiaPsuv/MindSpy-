@@ -12,11 +12,12 @@ namespace MindSpy
 		WSADATA wsd;
 		SOCKET sckt;
 		sockaddr_in server;
+		bool Conectado;
 		char msg[MAX_BUFFER];
 	public:
-		Conector();
+		Conector(string IP, UINT32 Puerto);
 		~Conector();
-		bool Conectar(string IP, UINT32 Puerto);
+		bool Listo();
 		bool EnviarComando(char* cmd);
 	};
 }
