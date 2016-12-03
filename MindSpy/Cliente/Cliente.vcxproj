@@ -92,6 +92,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -140,9 +141,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Cliente.h" />
+    <ClInclude Include="Conector.h" />
+    <ClInclude Include="Datos.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Cliente.cpp" />
+    <ClCompile Include="Conector.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
