@@ -1,7 +1,6 @@
 #pragma once
 #include <windows.h>
 #include <string>
-#include <VersionHelpers.h>
 #include <sstream>
 #include <cstdio>
 #include <Iphlpapi.h>
@@ -35,7 +34,7 @@ namespace MindSpy
 		}
 
 		int TipoComando(const char*c);
-		char* ObtenerMAC();
+		
 
 	public:
 		Conector(string IP, UINT32 Puerto);

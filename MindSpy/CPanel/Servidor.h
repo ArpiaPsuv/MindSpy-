@@ -1,6 +1,7 @@
 #pragma once
 #include <windows.h>
 #include <iostream>
+#include <vector>
 #include <cstdio>
 using namespace std;
 #define NO_PUERTO			9900
@@ -34,9 +35,9 @@ namespace MindSpy
 		} CONEXION, *PCONEXION;
 		WSADATA wsa;
 		SOCKET s;
-		PCONEXION sConexiones;
+		vector<CONEXION> Conexiones;
 		sockaddr_in server, client;
-		int c, resultado, cantidadConexiones;
+		int c, resultado;
 
 		void HiloConexion();
 		void HiloEscucha();

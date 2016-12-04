@@ -20,12 +20,18 @@
     <ClInclude Include="Datos.h">
       <Filter>Cabeceras</Filter>
     </ClInclude>
+    <ClInclude Include="Sistema.h">
+      <Filter>Cabeceras</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Cliente.cpp">
       <Filter>Codigo</Filter>
     </ClCompile>
     <ClCompile Include="Conector.cpp">
+      <Filter>Codigo</Filter>
+    </ClCompile>
+    <ClCompile Include="Sistema.cpp">
       <Filter>Codigo</Filter>
     </ClCompile>
   </ItemGroup>
