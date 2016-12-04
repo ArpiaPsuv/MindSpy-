@@ -6,14 +6,25 @@ namespace MindSpy
 		NULO,
 		MENSAJE=0,
 		FICHEROS,
-		SYSINFO
+		SYSINFO,
+		VERSION,
 	};
 
 	typedef struct stFichero
 	{
+		int nArchivos;
+		int nCarpetas;
 		char Archivos[MAX_BUFFER];
 		char Directorios[MAX_BUFFER];
-	} Fichero, *PFichero;
+	} Fichero;
+
+	typedef struct stSysInfo
+	{
+		int VersionMayor;
+		int VersionMenor;
+		int Compilación;
+		int EsWindowsServer;
+	} SysInfo;
 
 	class Datos {
 	public:

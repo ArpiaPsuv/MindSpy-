@@ -1,9 +1,11 @@
 #include "CPanel.h"
-#define CANTIDAD_COMANDOS 2
-char Comandos[CANTIDAD_COMANDOS][16] = { "ALIAS","ENVIAR" };
-enum CMDS {
+#define CANTIDAD_COMANDOS 4
+char Comandos[CANTIDAD_COMANDOS][16] = {"ALIAS","ENVIAR", "SYSINFO", "VERSION"};
+enum CLNT_CMDS {
 	ALIAS,
-	ENVIAR
+	ENVIAR,
+	SYSINFO,
+	VERSION
 };
 
 int TipoComando(const char*c) {
@@ -35,7 +37,7 @@ int main()
 		}
 
 		switch (TipoComando(Comando.c_str())) {
-		case ALIAS:
+		case CLNT_CMDS::ALIAS:
 			if (c.SetAlias(Op1.c_str(), Op2.c_str())) {
 				cout << "Alias cambiado." << endl;
 			}
@@ -44,7 +46,7 @@ int main()
 			}
 			break;
 
-		case ENVIAR:
+		case CLNT_CMDS::ENVIAR:
 			if (c.EnviarMensaje(Op1.c_str(), Op2.c_str())) {
 				cout << "Mensaje enviado." << endl;
 			}
@@ -52,6 +54,17 @@ int main()
 				cout << "Mensaje no enviado." << endl;
 			}
 			break;
+
+		case CLNT_CMDS::SYSINFO:
+			if (c.EnviarMensaje(Op1.c_str(), Comando.c_str()))
+			{
+				cout << "Solicitando información de sistema..." << endl;
+			} 
+			else
+			{
+				cout << "Solicitud fallida" << endl;
+			}
+		
 
 		default:
 			cout << "Comando \"" << Comando << "\" no existente" << endl;

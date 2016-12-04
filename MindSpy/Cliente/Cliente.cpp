@@ -1,18 +1,14 @@
 #include "Cliente.h"
+
+DWORD WINAPI HiloProc(LPARAM l);
+
 //int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR    lpCmdLine, int nCmdShow)
 int main()
 {
-	Conector cn;
-	char buffer[1024];
-	bool r = cn.Conectar("127.0.0.1", 9900);
-
-	if (!r) return 1;
-
-	while (true)
+	Conector cn("127.0.0.1", 9900);
+	while (cn.Listo())
 	{
-		cin.getline(buffer, 1024, '\n');
-		r = cn.EnviarComando(buffer);
+		Sleep(1000);
 	}
-	
 	return 0;
 }

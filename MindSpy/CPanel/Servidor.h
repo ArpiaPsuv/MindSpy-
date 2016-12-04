@@ -1,20 +1,36 @@
 #pragma once
 #include <windows.h>
 #include <iostream>
+#include <cstdio>
 using namespace std;
 #define NO_PUERTO			9900
+#define NO_SRV_CMDS			3
 #define IP_NO_REGISTRADA	-1
 
 namespace MindSpy 
 {
 	class Servidor {
 	private:
+		enum SRV_CMD {
+			CLOSE,
+			NAME,
+			SYSINFO
+		};
+
 		typedef struct stCon{
 			int ID;
 			char IP[32];
 			char Alias[32];
 			bool Activa;
 			SOCKET c_socket;
+
+			struct {
+				DWORD Build;
+				DWORD VersionMayor;
+				DWORD VersionMenor;
+				bool EsWindowsServer;
+				char MAC[18];
+			} SistemaCliente;
 		} CONEXION, *PCONEXION;
 		WSADATA wsa;
 		SOCKET s;

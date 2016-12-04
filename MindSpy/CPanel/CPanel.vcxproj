@@ -140,6 +140,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Cliente\Datos.h" />
     <ClInclude Include="CPanel.h" />
     <ClInclude Include="Servidor.h" />
   </ItemGroup>
