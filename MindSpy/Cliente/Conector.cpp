@@ -37,7 +37,6 @@ namespace MindSpy
 
 	void Conector::Escuchar()
 	{
-
 		while (true)
 		{
 			stringstream str;
