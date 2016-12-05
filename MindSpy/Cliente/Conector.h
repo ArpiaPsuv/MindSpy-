@@ -4,6 +4,7 @@
 #include <sstream>
 #include <cstdio>
 #include <Iphlpapi.h>
+#include "Sistema.h"
 #define MAX_BUFFER 4096
 #define CANTIDAD_COMANDOS 2
 #define COMANDO_NO_EXISTENTE -1

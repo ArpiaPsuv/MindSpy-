@@ -2,7 +2,7 @@
 #include <string>
 #include <Windows.h>
 #include <Iphlpapi.h>
-
+#include <VersionHelpers.h>
 using namespace std;
 
 namespace MindSpy
@@ -21,8 +21,12 @@ namespace MindSpy
 
 	class Sistema
 	{
+	private:
+		stSystemInfo info = {0};
+		void ObtenerMAC();
+		void ObtenerVersionWindows();
+
 	public:
-		char* ObtenerMAC();
-		UINT32 ObtenerVersionWindows();
+		Sistema();
 	};
 }

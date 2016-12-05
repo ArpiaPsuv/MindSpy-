@@ -73,14 +73,15 @@ namespace MindSpy
 				GetVersionExA(&ovi);
 
 				stringstream cmd;
+				Sistema sys;
 
-				cmd << "SYSINFO " <<
+				/**cmd << "SYSINFO " <<
 					ovi.dwBuildNumber << " " <<
 					ovi.dwMajorVersion << " " <<
 					ovi.dwMinorVersion << " " <<
 					(int)IsWindowsServer() << " " <<
-					ObtenerMAC();
-				cmd.getline(Mensaje, 128, 0);
+					ObtenerMAC();*/
+				cmd.getline("SYSINFO OK", 128, 0);
 				EnviarComando(Mensaje);
 				break;
 			}
