@@ -11,12 +11,12 @@ namespace MindSpy
 	class Sistema
 	{
 	private:
-		stSystemInfoResponse info = {0};
+		stSystemInfoResponse info = {0}; 
 		void ObtenerMAC();
 		void ObtenerVersionWindows();
 
 	public:
 		Sistema();
-		stSystemInfoResponse getInfo();
+		stSystemInfoResponse getInfo(); 
 	};
 }

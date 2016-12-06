@@ -163,4 +163,4 @@ namespace MindSpy
 	{
 		return info;
 	}
-}
+} 

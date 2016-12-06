@@ -14,7 +14,7 @@ namespace MindSpy
 		CLOSE,
 		NAME,
 		VERSION,
-		SYSINFO
+		SYSINFO 
 	};
 
 	// Estructura para los datos del sistema

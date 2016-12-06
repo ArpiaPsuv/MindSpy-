@@ -106,7 +106,7 @@ namespace MindSpy
 
 			case CLNT_CMDS::NAME:
 				break;
-
+				 
 			}
 		}
 	}
