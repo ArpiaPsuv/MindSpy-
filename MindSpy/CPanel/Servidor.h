@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <cstdio>
+#include "../Cliente/Datos.h"
 using namespace std;
 #define NO_PUERTO			9900
 #define NO_SRV_CMDS			3
@@ -12,30 +13,13 @@ namespace MindSpy
 {
 	class Servidor {
 	private:
-		enum SRV_CMD {
-			CLOSE,
-			NAME,
-			VERSION,
-			SYSINFO
-		};
-
 		typedef struct stCon{
 			int ID;
 			char IP[32];
 			char Alias[32];
 			bool Activa;
 			SOCKET c_socket;
-
-			struct stSystemInfo {
-				UINT32 Build;
-				UINT16 VersionMayor;
-				UINT16 VersionMenor;
-				UINT16 Arquitectura;
-				CHAR NombreOS[64];
-				CHAR MAC[18];
-				CHAR NombreUsuario[64];
-				bool EsWindowsServer;
-			} SistemaCliente;
+			stSystemInfoResponse SistemaCliente;
 		} CONEXION, *PCONEXION;
 		WSADATA wsa;
 		SOCKET s;

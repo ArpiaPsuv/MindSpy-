@@ -6,7 +6,7 @@ namespace MindSpy
 	{
 		PIP_ADAPTER_INFO AdapterInfo;
 		DWORD dwBufLen = sizeof(AdapterInfo);
-		static char mac_addr[18];
+		static wchar_t mac_addr[18];
 		AdapterInfo = (IP_ADAPTER_INFO *)malloc(dwBufLen);
 
 		if (GetAdaptersInfo(AdapterInfo, &dwBufLen) == ERROR_BUFFER_OVERFLOW) {
@@ -19,12 +19,12 @@ namespace MindSpy
 				if (strcmp(AdapterInfo->IpAddressList.IpAddress.String, "0.0.0.0") &&
 					strcmp(AdapterInfo->GatewayList.IpAddress.String, "0.0.0.0"))
 				{
-					sprintf(mac_addr, "%02X:%02X:%02X:%02X:%02X:%02X",
+					wsprintf(mac_addr, L"%02X:%02X:%02X:%02X:%02X:%02X",
 						AdapterInfo->Address[0], AdapterInfo->Address[1],
 						AdapterInfo->Address[2], AdapterInfo->Address[3],
 						AdapterInfo->Address[4], AdapterInfo->Address[5]);
 
-					strcpy(info.MAC, mac_addr);
+					wcsncpy(info.MAC, mac_addr, 18);
 					break;
 				}
 				AdapterInfo = AdapterInfo->Next;
@@ -44,8 +44,8 @@ namespace MindSpy
 		RtlGetVersionW(&oviex);
 		FreeLibrary(LoadLibraryW(L"ntdll.dll"));
 		info.Build = oviex.dwBuildNumber;
-		info.VersionMayor = oviex.dwMajorVersion;
-		info.VersionMenor = oviex.dwMinorVersion;
+		info.VersionMayor = (UINT16)oviex.dwMajorVersion;
+		info.VersionMenor = (UINT16)oviex.dwMinorVersion;
 		BOOL wow;
 		
 		HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, GetCurrentProcessId());
@@ -56,33 +56,33 @@ namespace MindSpy
 		switch (info.VersionMayor) 
 		{
 		case 10:
-			strncpy(info.NombreOS, "Windows 10", 64);
+			wcsncpy(info.NombreOS, L"Windows 10", 64);
 			break;
 		case 6:
 			switch (info.VersionMenor)
 			{ 
 			case 3:
-				strncpy(info.NombreOS, "Windows 8.1", 64);
+				wcsncpy(info.NombreOS, L"Windows 8.1", 64);
 				break;
 
 			case 2:
 				if (oviex.wProductType == VER_NT_WORKSTATION)
-					strncpy(info.NombreOS, "Windows 8", 64);
+					wcsncpy(info.NombreOS, L"Windows 8", 64);
 				else
-					strncpy(info.NombreOS, "Windows Server 2012", 64);
+					wcsncpy(info.NombreOS, L"Windows Server 2012", 64);
 				break;
 			case 1:
 				if (oviex.wProductType == VER_NT_WORKSTATION)
-					strncpy(info.NombreOS, "Windows 7", 64);
+					wcsncpy(info.NombreOS, L"Windows 7", 64);
 				else
-					strncpy(info.NombreOS, "Windows Server 2008 R2", 64);
+					wcsncpy(info.NombreOS, L"Windows Server 2008 R2", 64);
 				break;
 				
 			case 0:
 				if (oviex.wProductType == VER_NT_WORKSTATION)
-					strncpy(info.NombreOS, "Windows Vista", 64);
+					wcsncpy(info.NombreOS, L"Windows Vista", 64);
 				else
-					strncpy(info.NombreOS, "Windows Server 2008", 64);
+					wcsncpy(info.NombreOS, L"Windows Server 2008", 64);
 				break;
 			}
 			
@@ -92,26 +92,26 @@ namespace MindSpy
 			{
 			case 2:
 				if (oviex.wSuiteMask == VER_SUITE_WH_SERVER) 
-					strncpy(info.NombreOS, "Windows Home Server", 64);
+					wcsncpy(info.NombreOS, L"Windows Home Server", 64);
 				else if (oviex.wProductType = VER_NT_WORKSTATION) 
-					strncpy(info.NombreOS, "Windows XP Professional, x64 Edition", 64);
+					wcsncpy(info.NombreOS, L"Windows XP Professional, x64 Edition", 64);
 				else
-					strncpy(info.NombreOS, "Windows Server 2003", 64);
+					wcsncpy(info.NombreOS, L"Windows Server 2003", 64);
 				break;
 
 			case 1:
 				switch (oviex.wServicePackMajor)
 				{
 				case 3:
-					strncpy(info.NombreOS, "Windows XP SP3", 64);
+					wcsncpy(info.NombreOS, L"Windows XP SP3", 64);
 					break;
 
 				case 2:
-					strncpy(info.NombreOS, "Windows XP SP2", 64);
+					wcsncpy(info.NombreOS, L"Windows XP SP2", 64);
 					break;
 
 				case 1:
-					strncpy(info.NombreOS, "Windows XP SP1", 64);
+					wcsncpy(info.NombreOS, L"Windows XP SP1", 64);
 					break;
 				}
 				break;
@@ -150,7 +150,7 @@ namespace MindSpy
 	Sistema::Sistema()
 	{
 		DWORD bufflen = 64;
-		GetUserNameA(info.NombreUsuario, &bufflen);
+		GetUserNameW(info.NombreUsuario, &bufflen);
 		ObtenerMAC();
 		ObtenerVersionWindows();
 		if (IsWindowsServer())
@@ -159,7 +159,7 @@ namespace MindSpy
 			info.EsWindowsServer = false;
 	}
 
-	stSystemInfo Sistema::getInfo()
+	stSystemInfoResponse Sistema::getInfo()
 	{
 		return info;
 	}

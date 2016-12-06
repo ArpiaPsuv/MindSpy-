@@ -95,31 +95,31 @@ namespace MindSpy
 
 			switch (comando)
 			{
-			case SRV_CMD::CLOSE:
+			case SRV_CMDS::CLOSE:
 				Conexiones[MyID].Activa = false;
 				break;
 
-			case SRV_CMD::VERSION:
+			case SRV_CMDS::VERSION:
 				cout << "Version del cliente: " << &szBuff[4] << endl;
 				break;
 
-			case SRV_CMD::SYSINFO:
-				Conexiones[MyID].SistemaCliente = *(stCon::stSystemInfo*)&szBuff[4];
-				cout << "Informacion de cliente recibida." << endl;
-				cout << "IP: " << Conexiones[MyID].IP << endl;
-				cout << "MAC: " << Conexiones[MyID].SistemaCliente.MAC << endl;
-				cout << "Version de OS: " << Conexiones[MyID].SistemaCliente.VersionMayor << "."
-					<< Conexiones[MyID].SistemaCliente.VersionMenor << "."
-					<< Conexiones[MyID].SistemaCliente.Build << " ("
-					<< Conexiones[MyID].SistemaCliente.NombreOS << ")." << endl;
-				cout << "Arquitectura: " << Conexiones[MyID].SistemaCliente.Arquitectura << " bits." << endl;
-				cout << "Nombre de usuario: " << Conexiones[MyID].SistemaCliente.NombreUsuario << endl;
+			case SRV_CMDS::SYSINFO:
+				Conexiones[MyID].SistemaCliente = *(stSystemInfoResponse*)&szBuff[4];
+				wcout << L"Informacion de cliente recibida." << endl;
+				wcout << L"IP: " << Conexiones[MyID].IP << endl;
+				wcout << L"MAC: " << Conexiones[MyID].SistemaCliente.MAC << endl;
+				wcout << L"Version de OS: " << Conexiones[MyID].SistemaCliente.VersionMayor << L"."
+					<< Conexiones[MyID].SistemaCliente.VersionMenor << L"."
+					<< Conexiones[MyID].SistemaCliente.Build << L" ("
+					<< Conexiones[MyID].SistemaCliente.NombreOS << L")." << endl;
+				wcout << L"Arquitectura: " << Conexiones[MyID].SistemaCliente.Arquitectura << L" bits." << endl;
+				wcout << L"Nombre de usuario: " << Conexiones[MyID].SistemaCliente.NombreUsuario << endl;
 				break;
 			}
 
 			Sleep(50);
 		}
-		cout << "Cerrando conexion con " << Conexiones[MyID].IP << " (" << Conexiones[MyID].ID << ")..." << endl;
+		wcout << L"Cerrando conexion con " << Conexiones[MyID].IP << L" (" << Conexiones[MyID].ID << L")..." << endl;
 		closesocket(Conexiones[MyID].c_socket);
 	}
 
