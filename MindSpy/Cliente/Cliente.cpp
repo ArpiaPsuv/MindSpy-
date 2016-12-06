@@ -4,7 +4,8 @@
 int main()
 {
 	string ip;
-	cout << "Ingrese la IP: "; cin >> ip;
+	cout << "Ingrese la IP: ";
+	cin >> ip;
 	Conector cn(ip, 9900);
 	while (cn.Listo())
 	{

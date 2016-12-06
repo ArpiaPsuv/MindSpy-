@@ -21,7 +21,7 @@ namespace MindSpy
 	class Sistema
 	{
 	private:
-		stSystemInfo info = {0};
+		stSystemInfo info ;
 		void ObtenerMAC();
 		void ObtenerVersionWindows();
 

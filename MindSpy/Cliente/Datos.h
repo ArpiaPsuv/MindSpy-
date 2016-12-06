@@ -4,7 +4,7 @@ namespace MindSpy
 {
 	enum TIPO_DATO {
 		NULO,
-		MENSAJE=0,
+		MENSAJE = 0,
 		FICHEROS,
 		SYSINFO,
 		VERSION,
