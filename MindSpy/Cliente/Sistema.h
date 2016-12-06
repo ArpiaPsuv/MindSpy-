@@ -8,14 +8,13 @@ using namespace std;
 namespace MindSpy
 {
 	struct stSystemInfo {
-		USHORT VersionMayor;
-		USHORT VersionMenor;
 		UINT32 Build;
-		char NombreOS[64];
-		char TipoLicencia[64];
-		char MAC[18];
-		char NombreUsuario[64];
-		char NombreInstalador[64];
+		UINT16 VersionMayor;
+		UINT16 VersionMenor;
+		UINT16 Arquitectura;
+		CHAR NombreOS[64];
+		CHAR MAC[18];
+		CHAR NombreUsuario[64];
 		bool EsWindowsServer;
 	};
 
@@ -28,5 +27,6 @@ namespace MindSpy
 
 	public:
 		Sistema();
+		stSystemInfo getInfo();
 	};
 }

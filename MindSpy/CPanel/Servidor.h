@@ -15,6 +15,7 @@ namespace MindSpy
 		enum SRV_CMD {
 			CLOSE,
 			NAME,
+			VERSION,
 			SYSINFO
 		};
 
@@ -25,12 +26,15 @@ namespace MindSpy
 			bool Activa;
 			SOCKET c_socket;
 
-			struct {
-				DWORD Build;
-				DWORD VersionMayor;
-				DWORD VersionMenor;
+			struct stSystemInfo {
+				UINT32 Build;
+				UINT16 VersionMayor;
+				UINT16 VersionMenor;
+				UINT16 Arquitectura;
+				CHAR NombreOS[64];
+				CHAR MAC[18];
+				CHAR NombreUsuario[64];
 				bool EsWindowsServer;
-				char MAC[18];
 			} SistemaCliente;
 		} CONEXION, *PCONEXION;
 		WSADATA wsa;
