@@ -19,16 +19,14 @@ namespace MindSpy
 	{
 		if ((flags & WIN_FOLDERS) == WIN_FOLDERS)
 		{
-			//flags &= ~WIN_DEFAULT_FOLDERS;
+			 path = (WCHAR*)malloc(sizeof(wchar_t)*MAX_PATH);
 
 			if (flags & DIR_ROOT_SYSTEM)
 			{
 				printf("%s\n", "Nesecito La ruta Del sistema operativo Windows");
-				path = (WCHAR *)malloc(sizeof(WCHAR*));
+				
 				GetWindowsDirectoryW(path, MAX_PATH);
-
 				memcpy(buffer, path, MAX_PATH);
-				//wcscpy(buffer, path);
 				return (wcslen(buffer) > 0) ? true : false;
 			}
 
@@ -38,7 +36,7 @@ namespace MindSpy
 				//Esto No va Funcionar Para versiones de Windows Menor A  Windows Vista
 				printf("%s\n", "Nesecito La ruta Del escritorio");
 
-				WCHAR* path = (WCHAR *)malloc(sizeof(WCHAR*));
+				
 				SHGetKnownFolderPath(FOLDERID_Desktop, 0, NULL, &path);
 				wcscpy(buffer, path);
 				CoTaskMemFree(path);
@@ -51,7 +49,6 @@ namespace MindSpy
 				//Esto No va Funcionar Para versiones de Windows Menor A  Windows Vista
 				printf("%s\n", "Nesecito La ruta Del directorio de Mis documentos");
 
-				WCHAR* path = (WCHAR *)malloc(sizeof(WCHAR*));
 				SHGetKnownFolderPath(FOLDERID_Documents, 0, NULL, &path);
 				wcscpy(buffer, path);
 				CoTaskMemFree(path);
@@ -63,7 +60,6 @@ namespace MindSpy
 				//Esto No va Funcionar Para versiones de Windows Menor A  Windows Vista
 				printf("%s\n", "Nesecito La ruta Del directorio de Descargas");
 
-				WCHAR* path = (WCHAR *)malloc(sizeof(WCHAR*));
 				SHGetKnownFolderPath(FOLDERID_Downloads, 0, NULL, &path);
 				wcscpy(buffer, path);
 				CoTaskMemFree(path);
@@ -72,6 +68,11 @@ namespace MindSpy
 		}
 
 		return false;
+	}
+
+	bool FileSystem::getDirContent(LPWSTR path, DWORD type, DWORD flags)
+	{
+		return 0;
 	}
 
 	LPWSTR FileSystem::getWindowsPath()
