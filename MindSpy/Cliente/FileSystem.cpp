@@ -146,6 +146,6 @@ namespace MindSpy
 
 		for (int i = 0; i < stla.CantArchivos; i++)
 			std::wcout << &stla.Archivos[getID(i)] << std::endl;
-		return 0;
+		return stla;
 	}
 }
