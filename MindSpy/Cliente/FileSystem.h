@@ -46,9 +46,6 @@ namespace MindSpy
 		LPWSTR getDesktopPath();
 		LPWSTR getDocumentsPath();
 		LPWSTR getDowloadsPath();
-
-
-
 	private:
 		WCHAR* path;
 		WCHAR dirPath[MAX_PATH];

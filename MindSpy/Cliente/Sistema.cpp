@@ -4,56 +4,72 @@ namespace MindSpy
 {
 	void Sistema::ObtenerMAC()
 	{
+		// Crear la estrcutrura que va a alojar la información de los adaptadores
+		// Es una lista enlazada
 		PIP_ADAPTER_INFO AdapterInfo;
+		// Tamaño de la estructura
 		DWORD dwBufLen = sizeof(AdapterInfo);
+		// Varuable para guardar la MAC
 		static wchar_t mac_addr[18];
+		// Reservar memoria preliminar para la estructura
 		AdapterInfo = (IP_ADAPTER_INFO *)malloc(dwBufLen);
-
+		// Inicializar la estructura. Si falla, es poque el tamaño es incorrecto
 		if (GetAdaptersInfo(AdapterInfo, &dwBufLen) == ERROR_BUFFER_OVERFLOW)
 		{
+			// Si el tamaño es incorrecto, la función devuelve el tamaño correcto en dwBufLen.
+			// Solo liberamos y reservamos de nuevo
 			free(AdapterInfo);
 			AdapterInfo = (IP_ADAPTER_INFO*)malloc(dwBufLen);
 		}
-
-		if (GetAdaptersInfo(AdapterInfo, &dwBufLen) == NO_ERROR)
+		// Se crea una copia del puntero para liberarla al final, ya que el puntero cambia
+		PIP_ADAPTER_INFO ParaLiberar = AdapterInfo;
+		// Una vez con el tamaño correcto, se obtiene la info
+		if (GetAdaptersInfo(AdapterInfo, &dwBufLen) == ERROR_SUCCESS)
 		{
 			do
 			{
+				// Se valida si la IP de la interfaz y su puerta de enlace predeterminada, son distintas a cero
 				if (strcmp(AdapterInfo->IpAddressList.IpAddress.String, "0.0.0.0") &&
 					strcmp(AdapterInfo->GatewayList.IpAddress.String, "0.0.0.0"))
 				{
-<<<<<<< HEAD
+					// De serlo, se le da formato a la MAC y se copia a la variable
 					wsprintf(mac_addr, L"%02X:%02X:%02X:%02X:%02X:%02X",
 						AdapterInfo->Address[0], AdapterInfo->Address[1],
 						AdapterInfo->Address[2], AdapterInfo->Address[3],
 						AdapterInfo->Address[4], AdapterInfo->Address[5]);
-=======
-					sprintf(mac_addr, "%02X:%02X:%02X:%02X:%02X:%02X",
-					        AdapterInfo->Address[0], AdapterInfo->Address[1],
-					        AdapterInfo->Address[2], AdapterInfo->Address[3],
-					        AdapterInfo->Address[4], AdapterInfo->Address[5]);
->>>>>>> 4391b691624627bb56ec5ee4d8a05db5670a7343
 
+					// Se copian esos cambios a la estructura y se termina el ciclo
 					wcsncpy(info.MAC, mac_addr, 18);
 					break;
 				}
+				// Sino, se mueve el puntero a la estructura siguiente
 				AdapterInfo = AdapterInfo->Next;
 			}
 			while (AdapterInfo);
+			// Liberamos la memoria
+			free(ParaLiberar);
 		}
 	}
 
 	void Sistema::ObtenerVersionWindows()
 	{
+		// RtlGetVersion es una función de la API del WDK. En teoría, funciona solo en modo kernel bajo un IRQL >5
+		// Su equivalente en el Windows SDK está en desuso, así que se usará esta.
+		// Se crea un puntero a esa función y se obtiene su dirección válida con GetProcAddress.
 		void (__stdcall * RtlGetVersionW)(POSVERSIONINFOEXW);
 		RtlGetVersionW = (void(__stdcall*)(POSVERSIONINFOEXW)) GetProcAddress(LoadLibraryW(L"ntdll.dll"), "RtlGetVersion");
+		// Si GetProcAddress falla (algo poco probable), el constructor termina
 		if (!RtlGetVersionW)
 			return;
 
+		// Se declara la estructura para alojar la info, y se asigna su tamaño
 		OSVERSIONINFOEXW oviex;
 		oviex.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXW);
+		// Se obtiene la info
 		RtlGetVersionW(&oviex);
+		// Liberamos la biblioteca
 		FreeLibrary(LoadLibraryW(L"ntdll.dll"));
+		// Se obtiene la información de la estructura y dependiendo de la versión, se asigna el nombre del OS
 		info.Build = oviex.dwBuildNumber;
 		info.VersionMayor = (UINT16)oviex.dwMajorVersion;
 		info.VersionMenor = (UINT16)oviex.dwMinorVersion;
@@ -102,17 +118,10 @@ namespace MindSpy
 			switch (info.VersionMenor)
 			{
 			case 2:
-<<<<<<< HEAD
 				if (oviex.wSuiteMask == VER_SUITE_WH_SERVER) 
 					wcsncpy(info.NombreOS, L"Windows Home Server", 64);
 				else if (oviex.wProductType = VER_NT_WORKSTATION) 
 					wcsncpy(info.NombreOS, L"Windows XP Professional, x64 Edition", 64);
-=======
-				if (oviex.wSuiteMask == VER_SUITE_WH_SERVER)
-					strncpy(info.NombreOS, "Windows Home Server", 64);
-				else if (oviex.wProductType = VER_NT_WORKSTATION)
-					strncpy(info.NombreOS, "Windows XP Professional, x64 Edition", 64);
->>>>>>> 4391b691624627bb56ec5ee4d8a05db5670a7343
 				else
 					wcsncpy(info.NombreOS, L"Windows Server 2003", 64);
 				break;
@@ -167,6 +176,7 @@ namespace MindSpy
 
 	Sistema::Sistema()
 	{
+		// Se inicializan todos los datos de la estructura
 		DWORD bufflen = 64;
 		GetUserNameW(info.NombreUsuario, &bufflen);
 		ObtenerMAC();
@@ -179,10 +189,7 @@ namespace MindSpy
 
 	stSystemInfoResponse Sistema::getInfo()
 	{
+		// Se retorna la estructura
 		return info;
 	}
-<<<<<<< HEAD
 } 
-=======
-}
->>>>>>> 4391b691624627bb56ec5ee4d8a05db5670a7343

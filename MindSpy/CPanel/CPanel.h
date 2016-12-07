@@ -11,5 +11,10 @@ using namespace std;
 using namespace MindSpy;
 namespace MindSpy
 {
-
+	class CPanel {
+	private:
+		int TipoComando(const char*c);
+	public:
+		void Run();
+	};
 }

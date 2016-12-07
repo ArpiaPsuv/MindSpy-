@@ -68,10 +68,7 @@ namespace MindSpy
 	{
 		while (true)
 		{
-			// Los comandos pueden 
-			stringstream str;
-			string Comando, Op1, Op2;
-			char Mensaje[4096];
+			char Mensaje[MAX_BUFFER];
 			ZeroMemory(Mensaje, sizeof(Mensaje));
 			int resp = recv(sckt, Mensaje, sizeof(Mensaje), 0);
 			if (resp <= 0)
@@ -80,24 +77,16 @@ namespace MindSpy
 				break;
 			}
 
-			str.clear();
-			str << Mensaje;
-			str >> Comando;
-			str >> Op1;
-			getline(str, Op2, '\n');
+			USHORT comando = *(USHORT*)(Mensaje+2);
 
-			for (unsigned int i = 0; i < Comando.length(); i++) {
-				Comando[i] = toupper(Comando[i]);
-			}
-
-			switch (TipoComando(Comando.c_str()))
+			switch (comando)
 			{
 			case CLNT_CMDS::VERSION: 
-				EnviarComando((USHORT)strlen(VERSION_CLIENTE) + 1, CLNT_CMDS::VERSION, VERSION_CLIENTE);
+				EnviarComando((USHORT)strlen(VERSION_CLIENTE) + 1, CLNT_CMDS::VERSION, (BYTE*)VERSION_CLIENTE);
 				break;
 
 			case CLNT_CMDS::SYSINFO:
-				EnviarComando(sizeof(stSystemInfoResponse), CLNT_CMDS::SYSINFO, (char*)&sys.getInfo());
+				EnviarComando(sizeof(stSystemInfoResponse), CLNT_CMDS::SYSINFO, (BYTE*)&sys.getInfo());
 				break;
 
 			case CLNT_CMDS::CLOSE:

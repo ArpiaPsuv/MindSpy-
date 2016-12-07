@@ -146,6 +146,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CPanel.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="Servidor.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

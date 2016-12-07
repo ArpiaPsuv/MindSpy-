@@ -7,14 +7,18 @@ namespace MindSpy
 		CLOSE,			// Cerrar la conexion
 		NAME,			// Obtener nombre del servidor
 		VERSION,		// Version del cliente
-		SYSINFO			// Información del sistema
+		SYSINFO,		// Información del sistema
+		FILEINFO,		// Información de archivos
+		REGINFO,		// Información del registro
+		MENSAJE			// Mensaje desde el servidor
 	};
 
-	enum SRV_CMDS {
-		CLOSE,
-		NAME,
-		VERSION,
-		SYSINFO 
+	enum INTERNOS_CMDS {
+		REQ_ALIAS,
+		REQ_ENVIAR,
+		REQ_SYSINFO,
+		REQ_REGINFO,
+		REQ_FILEINFO
 	};
 
 	// Estructura para los datos del sistema
