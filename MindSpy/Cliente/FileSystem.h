@@ -1,7 +1,14 @@
 #pragma once
 #ifndef FILESYSTEM_H
-#define FILESYSTEM_H
+#define FILESYSTEM_H  // <<<< Eso es redundante. Para evitar eso es el #pragma once o.o
 
+#include <Shlobj.h>
+#include <Shlwapi.h>
+#include <Windows.h>
+#include <iostream>
+#include "Datos.h"
+
+#define getID(x) (MAX_PATH * x)
 
 namespace MindSpy
 {
@@ -42,7 +49,6 @@ namespace MindSpy
 
 	};
 
-
 	class FileSystem
 	{
 	public:
@@ -50,20 +56,21 @@ namespace MindSpy
 		~FileSystem();
 
 		bool getSytemDir(LPWSTR buffer, DWORD flags);
-		bool getDirContent(LPWSTR path, LPWSTR buffer, DWORD type, DWORD flags);
+		stListaArchivos getDirContent(LPWSTR path, DWORD type, DWORD flags);
 
 		LPWSTR getWindowsPath();
 		LPWSTR getDesktopPath();
 		LPWSTR getDocumentsPath();
 		LPWSTR getDowloadsPath();
-
-		WCHAR* getAllFiles();
+		stListaArchivos getAllFiles();
 
 
 	private:
+		UINT32 MemNeeded;
 		WCHAR* path;
 		WCHAR** rm;
 		WCHAR dirPath[MAX_PATH];
+		WCHAR *BuffTemp;
 	};
 
 

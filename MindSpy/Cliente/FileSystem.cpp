@@ -1,19 +1,16 @@
-#include "Windows.h"
 #include "FileSystem.h"
-#include "Shlobj.h"
-#include "Shlwapi.h"
-
-#include <iostream> //remove  later
-
 
 namespace MindSpy
 {
 	FileSystem::FileSystem()
 	{
+		BuffTemp = NULL;
 	}
 
 	FileSystem::~FileSystem()
 	{
+		if (BuffTemp)
+			free(BuffTemp);
 	}
 
 	bool FileSystem::getSytemDir(LPWSTR buffer, DWORD flags)
@@ -71,49 +68,40 @@ namespace MindSpy
 		return false;
 	}
 
-	bool FileSystem::getDirContent(LPWSTR path, LPWSTR buffer, DWORD type, DWORD flags)
+	stListaArchivos FileSystem::getDirContent(LPWSTR path, DWORD type, DWORD flags)
 	{
-		int items;
+		int items = 0;
+		int pos = 0;
 		HANDLE isFind;
 		WIN32_FIND_DATA FindData;
-		PathAddBackslashW(path);
 		WCHAR *ext = L"*";
+		if (BuffTemp)
+			free(BuffTemp);
 
-		if (type == ALL_FROM_PATH || ONLY_SUBDIR)wcscat(path, ext);
+		PathAddBackslashW(path);
+		if (type == ALL_FROM_PATH || ONLY_SUBDIR)
+			wcscat(path, ext);
 
 		isFind = FindFirstFileW(path, &FindData);
-		items = 0;
-		rm = (WCHAR **)malloc(sizeof(WCHAR*));
+		BuffTemp = (wchar_t*)malloc(sizeof(wchar_t)*MAX_PATH);
+		//rm = (WCHAR **)malloc(sizeof(WCHAR*));
 
 		do
 		{
-			if (type == ALL_FROM_PATH)
-			{
+			if (type == ONLY_SUBDIR && !(FindData.dwFileAttributes  & FILE_ATTRIBUTE_DIRECTORY))
+				continue;
 
-				rm = (WCHAR**)realloc(rm, sizeof(WCHAR*) * (items + 1));
-				rm[items] = (WCHAR*)malloc(sizeof(wchar_t)* MAX_PATH);
-				wcscpy(rm[items], FindData.cFileName);
-				items++;
-			}
-
-
-			if ((FindData.dwFileAttributes  & FILE_ATTRIBUTE_DIRECTORY) && type == ONLY_SUBDIR)
-			{
-				rm = (WCHAR**)realloc(rm, sizeof(WCHAR*) * (items + 1));
-				rm[items] = (WCHAR*)malloc(sizeof(wchar_t)* MAX_PATH);
-				wcscpy(rm[items], FindData.cFileName);
-				//std::wcout << rm[items] << std::endl;
-				items++;
-
-			}
-
+			wcscpy(&BuffTemp[getID(items++)], FindData.cFileName);
+			BuffTemp = (wchar_t*)realloc(BuffTemp, sizeof(wchar_t) * MAX_PATH * (items + 1));
 		} while (FindNextFileW(isFind, &FindData));
-
-
-		
-
-
-		return 0;
+		if (items) {
+			stListaArchivos stla;
+			stla.CantArchivos = items;
+			stla.Archivos = BuffTemp;
+			return stla;
+		}
+		else
+			return stListaArchivos();
 	}
 
 	LPWSTR FileSystem::getWindowsPath()
@@ -146,16 +134,18 @@ namespace MindSpy
 		return  false;
 	}
 
-	LPWSTR FileSystem::getAllFiles()
+	stListaArchivos FileSystem::getAllFiles()
 	{
-		
+
 		WCHAR rtPath[MAX_PATH];
 		RtlSecureZeroMemory(&path, sizeof(WCHAR));
 		RtlSecureZeroMemory(&rtPath, sizeof(WCHAR));
-		
+
 		path = getDowloadsPath();
-		getDirContent(path, rtPath, ALL_FROM_PATH, NULL);
-		std::wcout << rtPath[] << std::endl;
+		stListaArchivos stla = getDirContent(path, ALL_FROM_PATH, NULL);
+
+		for (int i = 0; i < stla.CantArchivos; i++)
+			std::wcout << &stla.Archivos[getID(i)] << std::endl;
 		return 0;
 	}
 }

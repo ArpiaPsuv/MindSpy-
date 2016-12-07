@@ -32,4 +32,10 @@ namespace MindSpy
 		WCHAR NombreUsuario[64];		// Nombre del usuario que usa el cliente
 		bool EsWindowsServer;			// Detección para Windows server
 	};
+
+	struct stListaArchivos {
+		UINT32 CantArchivos;
+		WCHAR* Archivos;
+		stListaArchivos() : CantArchivos(0), Archivos(NULL) {};
+	};
 }
