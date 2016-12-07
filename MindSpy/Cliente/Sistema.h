@@ -13,7 +13,7 @@ namespace MindSpy
 	{
 	private:
 		// Variable para guardar la información obtenida
-		stSystemInfoResponse info = {0}; 
+		stSystemInfoResponse info ; 
 		// Obtener la MAC de la interfaz de red conectada al router
 		void ObtenerMAC();
 		// Obtiene datos sobre la copia de Windows instalada
