@@ -12,28 +12,24 @@ namespace MindSpy
 
 	FileSystem::~FileSystem()
 	{
-		if (BuffTemp)
-			free(BuffTemp);
-		if (FechasCreacionTemp)
-			free(FechasCreacionTemp);
-		if (FechasModificacionTemp)
-			free(FechasModificacionTemp);
-		if (TamañosTemp)
-			free(TamañosTemp);
+		if (BuffTemp)free(BuffTemp);
+		if (FechasCreacionTemp)free(FechasCreacionTemp);
+		if (FechasModificacionTemp)free(FechasModificacionTemp);
+		if (TamañosTemp)free(TamañosTemp);
 	}
 
 	bool FileSystem::getSytemDir(LPWSTR buffer, DWORD flags)
 	{
 		if ((flags & WIN_FOLDERS) == WIN_FOLDERS)
 		{
-			path = (WCHAR*)malloc(sizeof(wchar_t)*MAX_PATH);
+			pvPath = (WCHAR*)malloc(sizeof(wchar_t)*MAX_PATH);
 
 			if (flags & DIR_ROOT_SYSTEM)
 			{
 				printf("%s\n", "Nesecito La ruta Del sistema operativo Windows");
 
-				GetWindowsDirectoryW(path, MAX_PATH);
-				memcpy(buffer, path, MAX_PATH);
+				GetWindowsDirectoryW(pvPath, MAX_PATH);
+				memcpy(buffer, pvPath, MAX_PATH);
 				return (wcslen(buffer) > 0) ? true : false;
 			}
 
@@ -44,9 +40,9 @@ namespace MindSpy
 				printf("%s\n", "Nesecito La ruta Del escritorio");
 
 
-				SHGetKnownFolderPath(FOLDERID_Desktop, 0, NULL, &path);
-				wcscpy(buffer, path);
-				CoTaskMemFree(path);
+				SHGetKnownFolderPath(FOLDERID_Desktop, 0, NULL, &pvPath);
+				wcscpy(buffer, pvPath);
+				CoTaskMemFree(pvPath);
 				return (wcslen(buffer) > 0) ? true : false;
 			}
 
@@ -56,9 +52,9 @@ namespace MindSpy
 				//Esto No va Funcionar Para versiones de Windows Menor A  Windows Vista
 				printf("%s\n", "Nesecito La ruta Del directorio de Mis documentos");
 
-				SHGetKnownFolderPath(FOLDERID_Documents, 0, NULL, &path);
-				wcscpy(buffer, path);
-				CoTaskMemFree(path);
+				SHGetKnownFolderPath(FOLDERID_Documents, 0, NULL, &pvPath);
+				wcscpy(buffer, pvPath);
+				CoTaskMemFree(pvPath);
 				return (wcslen(buffer) > 0) ? true : false;
 			}
 
@@ -67,9 +63,9 @@ namespace MindSpy
 				//Esto No va Funcionar Para versiones de Windows Menor A  Windows Vista
 				printf("%s\n", "Nesecito La ruta Del directorio de Descargas");
 
-				SHGetKnownFolderPath(FOLDERID_Downloads, 0, NULL, &path);
-				wcscpy(buffer, path);
-				CoTaskMemFree(path);
+				SHGetKnownFolderPath(FOLDERID_Downloads, 0, NULL, &pvPath);
+				wcscpy(buffer, pvPath);
+				CoTaskMemFree(pvPath);
 				return (wcslen(buffer) > 0) ? true : false;
 			}
 		}
@@ -77,19 +73,24 @@ namespace MindSpy
 		return false;
 	}
 
-	stListaArchivos FileSystem::getDirContent(LPWSTR path, DWORD type, DWORD flags)
+	stListaArchivos FileSystem::getDirContent(LPWSTR path, DWORD type, LPWSTR ext)
 	{
 		int items = 0;
 		int pos = 0;
 		HANDLE isFind;
 		WIN32_FIND_DATA FindData;
-		WCHAR *ext = L"*";
-		if (BuffTemp)
-			free(BuffTemp);
+		LARGE_INTEGER size;
+		WCHAR *extn = L"*";
+
+		RtlSecureZeroMemory(&FindData, sizeof(WIN32_FIND_DATA));
+		if (BuffTemp)free(BuffTemp);
 
 		PathAddBackslashW(path);
-		if (type == ALL_FROM_PATH || ONLY_SUBDIR)
-			wcscat(path, ext);
+
+		if (type == ALL_FROM_PATH || type == ONLY_SUB_DIRECTORIES)wcscat(path, extn);
+		else if ((ext != NULL) && type == BY_TYPE_EXTENSIONS) wcscat(path, ext);
+
+
 
 		isFind = FindFirstFileW(path, &FindData);
 		BuffTemp = (WCHAR*)malloc(sizeof(wchar_t)*MAX_PATH);
@@ -99,20 +100,24 @@ namespace MindSpy
 
 		do
 		{
-			if (type == ONLY_SUBDIR && !(FindData.dwFileAttributes  & FILE_ATTRIBUTE_DIRECTORY))
+			if (type == ONLY_SUB_DIRECTORIES && !(FindData.dwFileAttributes  & FILE_ATTRIBUTE_DIRECTORY))
 				continue;
+
 
 			wcscpy(&BuffTemp[getID(items)], FindData.cFileName);
 			TamañosTemp[items] = MAKELONGLONG(FindData.nFileSizeHigh, FindData.nFileSizeLow);
 			FechasCreacionTemp[items] = MAKELONGLONG(FindData.ftCreationTime.dwHighDateTime, FindData.ftCreationTime.dwLowDateTime);
 			FechasModificacionTemp[items] = MAKELONGLONG(FindData.ftLastWriteTime.dwHighDateTime, FindData.ftLastWriteTime.dwLowDateTime);
 
+
 			items++;
 			BuffTemp = (wchar_t*)realloc(BuffTemp, sizeof(wchar_t) * MAX_PATH * (items + 1));
 			TamañosTemp = (long long*)realloc(TamañosTemp, sizeof(long long) * (items + 1));
 			FechasCreacionTemp = (long long*)realloc(FechasCreacionTemp, sizeof(long long) * (items + 1));
 			FechasModificacionTemp = (long long*)realloc(FechasModificacionTemp, sizeof(long long) * (items + 1));
+
 		} while (FindNextFileW(isFind, &FindData));
+
 
 		if (items) {
 			stListaArchivos stla;
@@ -156,17 +161,31 @@ namespace MindSpy
 		return  false;
 	}
 
-	stListaArchivos FileSystem::getAllFiles()
+	stListaArchivos FileSystem::getAllFiles(LPWSTR path)
 	{
-		WCHAR rtPath[MAX_PATH];
-		RtlSecureZeroMemory(&path, sizeof(WCHAR));
-		RtlSecureZeroMemory(&rtPath, sizeof(WCHAR));
 
-		path = getDowloadsPath();
-		stListaArchivos stla = getDirContent(path, ALL_FROM_PATH, NULL);
+		RtlSecureZeroMemory(&pvPath, sizeof(WCHAR));
+		pvPath = path;
+		stListaArchivos stla = getDirContent(pvPath, ALL_FROM_PATH, NULL);
+		return stla;
+	}
 
-		for (int i = 0; i < stla.CantArchivos; i++)
-			std::wcout << &stla.Archivos[getID(i)] << std::endl;
+	stListaArchivos FileSystem::getAllSubdir(LPWSTR path)
+	{
+
+		RtlSecureZeroMemory(&pvPath, sizeof(WCHAR));
+		pvPath = getDesktopPath();
+		stListaArchivos stla = getDirContent(pvPath, ONLY_SUB_DIRECTORIES, NULL);
+		return stla;
+	}
+
+	stListaArchivos FileSystem::getFileByExt(LPWSTR path, LPWSTR ext)
+	{
+		LPWSTR extn;
+		RtlSecureZeroMemory(&pvPath, sizeof(WCHAR));
+		pvPath = path;
+		extn = ext;
+		stListaArchivos  stla = getDirContent(pvPath, BY_TYPE_EXTENSIONS, extn);
 		return stla;
 	}
 }

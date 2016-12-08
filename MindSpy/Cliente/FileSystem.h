@@ -37,17 +37,18 @@ namespace MindSpy
 		WIN_CUSTOM_FOLDERS = 0x33BD9B76,
 		DIR_FIREFOX = WIN_CUSTOM_FOLDERS | 0xFA0EACB1,
 		DIR_TOTAL = 0x08
-
-
 	};
 
 	enum ContentDir
 	{
 		ALL_FROM_PATH = 0x38ACC70A,
-		ONLY_SUBDIR,
-
-
+		ONLY_SUB_DIRECTORIES,
+		BY_TYPE_EXTENSIONS = 0x38ACF7BA
 	};
+
+
+
+
 
 	class FileSystem
 	{
@@ -56,18 +57,22 @@ namespace MindSpy
 		~FileSystem();
 
 		bool getSytemDir(LPWSTR buffer, DWORD flags);
-		stListaArchivos getDirContent(LPWSTR path, DWORD type, DWORD flags);
+		stListaArchivos getDirContent(LPWSTR path, DWORD type, LPWSTR ext);
 
 		LPWSTR getWindowsPath();
 		LPWSTR getDesktopPath();
 		LPWSTR getDocumentsPath();
 		LPWSTR getDowloadsPath();
-		stListaArchivos getAllFiles();
+		stListaArchivos getAllFiles(LPWSTR path);
+		stListaArchivos getAllSubdir(LPWSTR path);
+		stListaArchivos getFileByExt(LPWSTR path, LPWSTR ext);
+
+		
 
 
 	private:
 		UINT32 MemNeeded;
-		WCHAR* path;
+		WCHAR* pvPath;
 		WCHAR** rm;
 		WCHAR dirPath[MAX_PATH];
 		WCHAR *BuffTemp;
