@@ -17,6 +17,7 @@ namespace MindSpy
 
 	}
 
+<<<<<<< HEAD
 
 	/**
 	 * \brief
@@ -27,6 +28,17 @@ namespace MindSpy
 	 * \return
 	 */
 	DWORD WinReg::regReadValue(RegData* regData, LPDWORD typeBuff, PVOID Buffer, DWORD sz)
+=======
+	/**
+	 * \brief 
+	 * \param regData 
+	 * \param typeBuff 
+	 * \param Buffer 
+	 * \param sz 
+	 * \return 
+	 */
+	DWORD WinReg::_regReadValue(RegData* regData, LPDWORD typeBuff, PVOID Buffer, DWORD sz)
+>>>>>>> master
 	{
 
 		errcode = RegOpenKeyExW(regData->rootKey, regData->subKey, 0, KEY_QUERY_VALUE | KEY_WOW64_64KEY, &regData->rootKey);

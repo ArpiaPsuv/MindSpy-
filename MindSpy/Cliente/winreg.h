@@ -49,10 +49,15 @@ namespace MindSpy
 
 		bool _setRegValueDword(RegData* rgdata, DWORD data);
 
+<<<<<<< HEAD
 
 	private:
 		DWORD errcode;
 		DWORD type;
+=======
+	private:
+		DWORD errcode;
+>>>>>>> master
 	};
 
 
