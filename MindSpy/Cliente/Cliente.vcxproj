@@ -147,12 +147,14 @@
     <ClInclude Include="Datos.h" />
     <ClInclude Include="FileSystem.h" />
     <ClInclude Include="Sistema.h" />
+    <ClInclude Include="winreg.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Cliente.cpp" />
     <ClCompile Include="Conector.cpp" />
     <ClCompile Include="FileSystem.cpp" />
     <ClCompile Include="Sistema.cpp" />
+    <ClCompile Include="winreg.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

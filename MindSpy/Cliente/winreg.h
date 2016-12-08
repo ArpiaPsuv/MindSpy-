@@ -9,8 +9,6 @@ namespace MindSpy
 		HKEY rootKey;
 		LPWSTR subKey;
 		LPWSTR value;
-		DWORD dwResul;
-
 	}RegData;
 
 
@@ -20,10 +18,41 @@ namespace MindSpy
 		WinReg();
 		~WinReg();
 
-		DWORD _regReadValue(RegData* regData, LPDWORD typeBuff, PVOID Buffer, DWORD sz);
+		/**
+		 * \brief 
+		 * \param regData 
+		 * \param typeBuff 
+		 * \param Buffer 
+		 * \param sz 
+		 * \return 
+		 */
+
+		DWORD regReadValue(RegData* regData, LPDWORD typeBuff, PVOID Buffer, DWORD sz);
+
+		bool regSetValue(RegData* regData, DWORD type, const void* buffer, DWORD bufferSize);
+		/**
+		 * \brief 
+		 * \param data 
+		 * \param DataBuff 
+		 * \return 
+		 */
+		DWORD getRegDwordValue(RegData* data, void* DataBuff);
+		
+		/**
+		 * \brief 
+		 * \param data 
+		 * \param buffer 
+		 * \param bufferSz 
+		 * \return 
+		 */
+		DWORD getRegStrinData(RegData* data, LPWSTR buffer, DWORD bufferSz);
+
+		bool setRegValueDword(RegData* rgdata, DWORD data);
+
 
 	private:
-
+		DWORD errcode;
+		DWORD type;
 	};
 
 
