@@ -1,6 +1,10 @@
 #pragma once
+#include <string>
+#include <windows.h>
 #define MAX_BUFFER 4096
+#define getID(x) (MAX_PATH * x)
 #define MAKELONGLONG(hi, lo)    ((LONGLONG(DWORD(hi) & 0xffffffff) << 32 ) | LONGLONG(DWORD(lo) & 0xffffffff))
+using namespace std;
 namespace MindSpy
 {
 	// Estructura para los datos del cliente
@@ -50,9 +54,9 @@ namespace MindSpy
 	struct stListaArchivos {
 		UINT32 CantArchivos;
 		WCHAR* Archivos;
-		long long* FechasCreacion;
-		long long* FechasModificacion;
-		long long* Tamaños;
+		PFILETIME FechasCreacion;
+		PFILETIME FechasModificacion;
+		PLONGLONG Tamaños;
 		stListaArchivos() : 
 			CantArchivos(0), 
 			Archivos(NULL), 
@@ -60,4 +64,11 @@ namespace MindSpy
 			FechasModificacion(NULL),
 			Tamaños(NULL){};
 	};
+
+	typedef struct stFile {
+		FILETIME FechaCreacion;
+		FILETIME FechaModificacion;
+		wstring nombre;
+		LONGLONG Tamaño;
+	} Archivo;
 }

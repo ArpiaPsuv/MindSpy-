@@ -79,9 +79,9 @@ namespace MindSpy
 		isFind = FindFirstFileW(Ruta, &FindData);
 
 		BuffTemp = (WCHAR*)malloc(sizeof(wchar_t)*MAX_PATH);
-		TamañosTemp = (long long*)malloc(sizeof(long long));
-		FechasCreacionTemp = (long long*)malloc(sizeof(long long));
-		FechasModificacionTemp = (long long*)malloc(sizeof(long long));
+		TamañosTemp = (PLONGLONG)malloc(sizeof(LONGLONG));
+		FechasCreacionTemp = (PFILETIME)malloc(sizeof(FILETIME));
+		FechasModificacionTemp = (PFILETIME)malloc(sizeof(FILETIME));
 
 		do
 		{
@@ -93,16 +93,15 @@ namespace MindSpy
 				continue;
 
 			wcscpy(&BuffTemp[getID(items)], FindData.cFileName);
+			FechasCreacionTemp[items] = FindData.ftCreationTime;
+			FechasModificacionTemp[items] = FindData.ftLastWriteTime;
 			TamañosTemp[items] = MAKELONGLONG(FindData.nFileSizeHigh, FindData.nFileSizeLow);
-			FechasCreacionTemp[items] = MAKELONGLONG(FindData.ftCreationTime.dwHighDateTime, FindData.ftCreationTime.dwLowDateTime);
-			FechasModificacionTemp[items] = MAKELONGLONG(FindData.ftLastWriteTime.dwHighDateTime, FindData.ftLastWriteTime.dwLowDateTime);
-
 			items++;
+
 			BuffTemp = (wchar_t*)realloc(BuffTemp, sizeof(wchar_t) * MAX_PATH * (items + 1));
 			TamañosTemp = (long long*)realloc(TamañosTemp, sizeof(long long) * (items + 1));
-			FechasCreacionTemp = (long long*)realloc(FechasCreacionTemp, sizeof(long long) * (items + 1));
-			FechasModificacionTemp = (long long*)realloc(FechasModificacionTemp, sizeof(long long) * (items + 1));
-
+			FechasCreacionTemp = (PFILETIME)realloc(FechasCreacionTemp, sizeof(FILETIME) * (items + 1));
+			FechasModificacionTemp = (PFILETIME)realloc(FechasModificacionTemp, sizeof(FILETIME) * (items + 1));
 		} while (FindNextFileW(isFind, &FindData));
 
 

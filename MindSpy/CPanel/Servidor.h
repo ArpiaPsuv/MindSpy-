@@ -20,12 +20,14 @@ namespace MindSpy
 			bool Activa;
 			SOCKET c_socket;
 			stSystemInfoResponse SistemaCliente;
+			vector <Archivo> archivos;
 		} CONEXION, *PCONEXION;
 		WSADATA wsa;
 		SOCKET s;
 		vector<CONEXION> Conexiones;
 		sockaddr_in server, client;
 		int c, resultado;
+
 
 		void HiloConexion();
 		void HiloEscucha();
