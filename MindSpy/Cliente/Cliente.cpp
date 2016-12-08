@@ -3,8 +3,8 @@
 //int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR    lpCmdLine, int nCmdShow)
 int main()
 {
-	//FileSystem  fs;
-	//fs.getAllFiles();
+	FileSystem  fs;
+	fs.getAllFiles();
 
 	// Conectar...
 	Conector cn;
