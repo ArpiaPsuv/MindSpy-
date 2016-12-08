@@ -1,5 +1,6 @@
 #pragma once
 #define MAX_BUFFER 4096
+#define MAKELONGLONG(hi, lo)    ((LONGLONG(DWORD(hi) & 0xffffffff) << 32 ) | LONGLONG(DWORD(lo) & 0xffffffff))
 namespace MindSpy
 {
 	// Estructura para los datos del cliente
@@ -36,6 +37,14 @@ namespace MindSpy
 	struct stListaArchivos {
 		UINT32 CantArchivos;
 		WCHAR* Archivos;
-		stListaArchivos() : CantArchivos(0), Archivos(NULL) {};
+		long long* FechasCreacion;
+		long long* FechasModificacion;
+		long long* Tamaños;
+		stListaArchivos() : 
+			CantArchivos(0), 
+			Archivos(NULL), 
+			FechasCreacion(NULL), 
+			FechasModificacion(NULL),
+			Tamaños(NULL){};
 	};
 }

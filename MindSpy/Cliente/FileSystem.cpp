@@ -5,12 +5,21 @@ namespace MindSpy
 	FileSystem::FileSystem()
 	{
 		BuffTemp = NULL;
+		FechasCreacionTemp = NULL;
+		FechasModificacionTemp = NULL;
+		TamañosTemp = NULL;
 	}
 
 	FileSystem::~FileSystem()
 	{
 		if (BuffTemp)
 			free(BuffTemp);
+		if (FechasCreacionTemp)
+			free(FechasCreacionTemp);
+		if (FechasModificacionTemp)
+			free(FechasModificacionTemp);
+		if (TamañosTemp)
+			free(TamañosTemp);
 	}
 
 	bool FileSystem::getSytemDir(LPWSTR buffer, DWORD flags)
@@ -83,22 +92,35 @@ namespace MindSpy
 			wcscat(path, ext);
 
 		isFind = FindFirstFileW(path, &FindData);
-		BuffTemp = (wchar_t*)malloc(sizeof(wchar_t)*MAX_PATH);
-		//rm = (WCHAR **)malloc(sizeof(WCHAR*));
+		BuffTemp = (WCHAR*)malloc(sizeof(wchar_t)*MAX_PATH);
+		TamañosTemp = (long long*)malloc(sizeof(long long));
+		FechasCreacionTemp = (long long*)malloc(sizeof(long long));
+		FechasModificacionTemp = (long long*)malloc(sizeof(long long));
 
 		do
 		{
 			if (type == ONLY_SUBDIR && !(FindData.dwFileAttributes  & FILE_ATTRIBUTE_DIRECTORY))
 				continue;
-			
-			wcscpy(&BuffTemp[getID(items++)], FindData.cFileName);
+
+			wcscpy(&BuffTemp[getID(items)], FindData.cFileName);
+			TamañosTemp[items] = MAKELONGLONG(FindData.nFileSizeHigh, FindData.nFileSizeLow);
+			FechasCreacionTemp[items] = MAKELONGLONG(FindData.ftCreationTime.dwHighDateTime, FindData.ftCreationTime.dwLowDateTime);
+			FechasModificacionTemp[items] = MAKELONGLONG(FindData.ftLastWriteTime.dwHighDateTime, FindData.ftLastWriteTime.dwLowDateTime);
+
+			items++;
 			BuffTemp = (wchar_t*)realloc(BuffTemp, sizeof(wchar_t) * MAX_PATH * (items + 1));
+			TamañosTemp = (long long*)realloc(TamañosTemp, sizeof(long long) * (items + 1));
+			FechasCreacionTemp = (long long*)realloc(FechasCreacionTemp, sizeof(long long) * (items + 1));
+			FechasModificacionTemp = (long long*)realloc(FechasModificacionTemp, sizeof(long long) * (items + 1));
 		} while (FindNextFileW(isFind, &FindData));
 
 		if (items) {
 			stListaArchivos stla;
 			stla.CantArchivos = items;
 			stla.Archivos = BuffTemp;
+			stla.FechasCreacion = FechasCreacionTemp;
+			stla.FechasModificacion = FechasModificacionTemp;
+			stla.Tamaños = TamañosTemp;
 			return stla;
 		}
 		else

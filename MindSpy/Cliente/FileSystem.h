@@ -71,6 +71,9 @@ namespace MindSpy
 		WCHAR** rm;
 		WCHAR dirPath[MAX_PATH];
 		WCHAR *BuffTemp;
+		long long * TamañosTemp;
+		long long * FechasCreacionTemp;
+		long long * FechasModificacionTemp;
 	};
 
 
