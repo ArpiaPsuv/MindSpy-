@@ -47,17 +47,12 @@ namespace MindSpy
 		 */
 		DWORD getRegStrinData(RegData* data, LPWSTR buffer, DWORD bufferSz);
 
-		bool _setRegValueDword(RegData* rgdata, DWORD data);
+		bool setRegValueDword(RegData* rgdata, DWORD data);
 
-<<<<<<< HEAD
 
 	private:
 		DWORD errcode;
 		DWORD type;
-=======
-	private:
-		DWORD errcode;
->>>>>>> master
 	};
 
 

@@ -17,7 +17,6 @@ namespace MindSpy
 
 	}
 
-<<<<<<< HEAD
 
 	/**
 	 * \brief
@@ -28,17 +27,6 @@ namespace MindSpy
 	 * \return
 	 */
 	DWORD WinReg::regReadValue(RegData* regData, LPDWORD typeBuff, PVOID Buffer, DWORD sz)
-=======
-	/**
-	 * \brief 
-	 * \param regData 
-	 * \param typeBuff 
-	 * \param Buffer 
-	 * \param sz 
-	 * \return 
-	 */
-	DWORD WinReg::_regReadValue(RegData* regData, LPDWORD typeBuff, PVOID Buffer, DWORD sz)
->>>>>>> master
 	{
 
 		errcode = RegOpenKeyExW(regData->rootKey, regData->subKey, 0, KEY_QUERY_VALUE | KEY_WOW64_64KEY, &regData->rootKey);
@@ -51,16 +39,17 @@ namespace MindSpy
 		return errcode;
 	}
 
-	bool WinReg::regSetValue(RegData* regData, DWORD type, const void* buffer, DWORD bufferSize)
+	bool regSetValue(RegData* regData, DWORD type, const void* buffer, DWORD bufferSize)
 	{
-		
+		bool retVal = false;
 		if (RegCreateKeyExW(regData->rootKey, regData->subKey, 0, NULL, 0, KEY_SET_VALUE, NULL, &regData->rootKey, NULL) == ERROR_SUCCESS)
 		{
-			if (RegSetValueExW(regData->rootKey, regData->value, 0, type, (LPBYTE)buffer, bufferSize) == ERROR_SUCCESS)errcode = true;
+			if (RegSetValueExW(regData->rootKey, regData->value, 0, type, (LPBYTE)buffer, bufferSize) == ERROR_SUCCESS)retVal = true;
 			RegCloseKey(regData->rootKey);
 		}
-		return errcode;
+		return retVal;
 	}
+
 
 	DWORD WinReg::getRegDwordValue(RegData* data, void* DataBuff)
 	{
