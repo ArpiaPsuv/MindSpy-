@@ -22,6 +22,13 @@ namespace MindSpy
 		REQ_FILEINFO
 	};
 
+	enum FILEINFO_QUERY
+	{
+		REQ_ALL_FROM_PATH,
+		REQ_ONLY_SUBDIR,
+		REQ_ONLY_ARCHIVE
+	};
+
 	// Estructura para los datos del sistema
 	struct stSystemInfoResponse {
 		UINT32 Build;					// Compilación del OS
@@ -32,6 +39,12 @@ namespace MindSpy
 		WCHAR MAC[18];					// Dirección física de la interface de red conectada al router
 		WCHAR NombreUsuario[64];		// Nombre del usuario que usa el cliente
 		bool EsWindowsServer;			// Detección para Windows server
+	};
+
+	struct stFileInfoRequest {
+		UINT8 Query;
+		WCHAR Path[MAX_PATH];
+		WCHAR Filtro[10];
 	};
 
 	struct stListaArchivos {

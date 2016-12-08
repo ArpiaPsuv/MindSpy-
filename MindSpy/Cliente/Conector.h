@@ -6,6 +6,7 @@
 #include <Iphlpapi.h>
 #include "Sistema.h"
 #include "Datos.h"
+#include "FileSystem.h"
 // tamaño de buffer maximo
 #define MAX_BUFFER 4096
 // Comandos disponibles

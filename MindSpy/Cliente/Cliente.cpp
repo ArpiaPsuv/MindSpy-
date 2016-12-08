@@ -3,9 +3,6 @@
 //int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR    lpCmdLine, int nCmdShow)
 int main()
 {
-	FileSystem  fs;
-	fs.getAllFiles();
-
 	// Conectar...
 	Conector cn;
 	// Mientras la conexión siga vigente

@@ -6,8 +6,9 @@
 #include <Shlwapi.h>
 #include <Windows.h>
 #include <iostream>
+#include <string>
 #include "Datos.h"
-
+using namespace std;
 #define getID(x) (MAX_PATH * x)
 
 namespace MindSpy
@@ -23,7 +24,8 @@ namespace MindSpy
 
 	/**
 	* \brief  Simple Enumeracion los Tipos de Directorio
-	*/
+	* \note La dejaré solo por compatibilidad de versiones. No considero que haya que complicarse tanto
+
 	enum SystemFolder
 	{
 
@@ -33,20 +35,25 @@ namespace MindSpy
 		DIR_DOCUMENTS = WIN_FOLDERS | DIR_ROOT_DOCUMENTS,
 		DIR_DOWNLOADS = WIN_FOLDERS | DIR_ROOT_DOWNLOADS,
 
-
 		WIN_CUSTOM_FOLDERS = 0x33BD9B76,
 		DIR_FIREFOX = WIN_CUSTOM_FOLDERS | 0xFA0EACB1,
 		DIR_TOTAL = 0x08
+	};	
 
+	*/
 
+	enum SystemFolder {
+		DIR_HOME_SYSTEM,
+		DIR_DESKTOP,
+		DIR_DOCUMENTS,
+		DIR_DOWNLOADS
 	};
 
 	enum ContentDir
 	{
-		ALL_FROM_PATH = 0x38ACC70A,
+		ALL_FROM_PATH,
 		ONLY_SUBDIR,
-
-
+		ONLY_ARCHIVE
 	};
 
 	class FileSystem
@@ -55,20 +62,18 @@ namespace MindSpy
 		FileSystem();
 		~FileSystem();
 
-		bool getSytemDir(LPWSTR buffer, DWORD flags);
-		stListaArchivos getDirContent(LPWSTR path, DWORD type, DWORD flags);
+		wstring getSystemDir(SystemFolder Dir);
+		stListaArchivos getDirContent(wstring path, wstring Filter, ContentDir type, DWORD flags);
 
-		LPWSTR getWindowsPath();
-		LPWSTR getDesktopPath();
-		LPWSTR getDocumentsPath();
-		LPWSTR getDowloadsPath();
-		stListaArchivos getAllFiles();
-
+		wstring getWindowsPath();
+		wstring getDesktopPath();
+		wstring getDocumentsPath();
+		wstring getDowloadsPath();
+		stListaArchivos getAllFiles(wstring path, wstring Filter);
+		stListaArchivos getAllDirs(wstring path, wstring Filter);
+		stListaArchivos getAll(wstring path, wstring Filter);
 
 	private:
-		UINT32 MemNeeded;
-		WCHAR* path;
-		WCHAR** rm;
 		WCHAR dirPath[MAX_PATH];
 		WCHAR *BuffTemp;
 		long long * TamañosTemp;

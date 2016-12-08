@@ -103,13 +103,14 @@ namespace MindSpy
 		int MyID = Conexiones.size() - 1;
 		// Asignar el ID al registro
 		Conexiones[MyID].Activa = true;
-		char szBuff[512];
+		char* szBuff = NULL;
 		// Mientras la conexión esté activa...
 		while (Conexiones[MyID].Activa) {
 			// variable para guardar la cantidad de bytes disponibles en el stream
 			DWORD bDisponibles;
 			// Validar si la conexión sigue activa
-			int resp = recv(Conexiones[MyID].c_socket, szBuff, 1, MSG_PEEK);
+			char bufft;
+			int resp = recv(Conexiones[MyID].c_socket, &bufft, 1, MSG_PEEK);
 			// Si no lo está, nos vamos
 			if (resp == SOCKET_ERROR)
 				break;
@@ -117,12 +118,20 @@ namespace MindSpy
 			// Verificamos si hay bytes por leer
 			ioctlsocket(Conexiones[MyID].c_socket, FIONREAD, &bDisponibles);
 			// si no los hay, ralentizamos y reiniciamos el ciclo
-			if (!bDisponibles) {
+			if (!bDisponibles) 
+			{
 				Sleep(50);
 				continue;
 			}
+			else 
+			{
+				if (!szBuff) 
+					free(szBuff);
+				szBuff = (char*)malloc(bDisponibles);
+					
+			}
 			// Si los hay, los leemos
-			resp = recv(Conexiones[MyID].c_socket, szBuff, sizeof(szBuff), 0);
+			resp = recv(Conexiones[MyID].c_socket, szBuff, bDisponibles, 0);
 			if (resp == 0)
 				continue;
 			else if (resp < 0)

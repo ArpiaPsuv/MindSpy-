@@ -22,76 +22,65 @@ namespace MindSpy
 			free(TamañosTemp);
 	}
 
-	bool FileSystem::getSytemDir(LPWSTR buffer, DWORD flags)
+	/*
+	*		-----------FUNCIÓN NO COMPATIBLE CON WINXP-----------
+	*		USAR SHGetFolderPath EN CASO DE QUE EL SISTEMA SEA V5
+	*/
+	wstring FileSystem::getSystemDir(SystemFolder Dir)
 	{
-		if ((flags & WIN_FOLDERS) == WIN_FOLDERS)
-		{
-			path = (WCHAR*)malloc(sizeof(wchar_t)*MAX_PATH);
+		WCHAR path[MAX_PATH];
+		wchar_t *ppath;
+		wstring retorno;
 
-			if (flags & DIR_ROOT_SYSTEM)
-			{
-				printf("%s\n", "Nesecito La ruta Del sistema operativo Windows");
+		switch (Dir) {
+		case SystemFolder::DIR_HOME_SYSTEM:
+			GetWindowsDirectoryW(path, MAX_PATH);
+			return path;
 
-				GetWindowsDirectoryW(path, MAX_PATH);
-				memcpy(buffer, path, MAX_PATH);
-				return (wcslen(buffer) > 0) ? true : false;
-			}
+		case SystemFolder::DIR_DESKTOP:
+			SHGetKnownFolderPath(FOLDERID_Desktop, 0, NULL, &ppath);
+			retorno = ppath;
+			CoTaskMemFree(ppath);
+			return retorno;
 
+		case SystemFolder::DIR_DOCUMENTS:
+			SHGetKnownFolderPath(FOLDERID_Documents, 0, NULL, &ppath);
+			retorno = ppath;
+			CoTaskMemFree(ppath);
+			return retorno;
 
-			if (flags & DIR_ROOT_DESKTOP)
-			{
-				//Esto No va Funcionar Para versiones de Windows Menor A  Windows Vista
-				printf("%s\n", "Nesecito La ruta Del escritorio");
+		case SystemFolder::DIR_DOWNLOADS:
+			SHGetKnownFolderPath(FOLDERID_Downloads, 0, NULL, &ppath);
+			retorno = ppath;
+			CoTaskMemFree(ppath);
+			return retorno;
 
-
-				SHGetKnownFolderPath(FOLDERID_Desktop, 0, NULL, &path);
-				wcscpy(buffer, path);
-				CoTaskMemFree(path);
-				return (wcslen(buffer) > 0) ? true : false;
-			}
-
-
-			if (flags & DIR_ROOT_DOCUMENTS)
-			{
-				//Esto No va Funcionar Para versiones de Windows Menor A  Windows Vista
-				printf("%s\n", "Nesecito La ruta Del directorio de Mis documentos");
-
-				SHGetKnownFolderPath(FOLDERID_Documents, 0, NULL, &path);
-				wcscpy(buffer, path);
-				CoTaskMemFree(path);
-				return (wcslen(buffer) > 0) ? true : false;
-			}
-
-			if (flags & DIR_ROOT_DOWNLOADS)
-			{
-				//Esto No va Funcionar Para versiones de Windows Menor A  Windows Vista
-				printf("%s\n", "Nesecito La ruta Del directorio de Descargas");
-
-				SHGetKnownFolderPath(FOLDERID_Downloads, 0, NULL, &path);
-				wcscpy(buffer, path);
-				CoTaskMemFree(path);
-				return (wcslen(buffer) > 0) ? true : false;
-			}
+		default:
+			return L"";
 		}
-
-		return false;
 	}
 
-	stListaArchivos FileSystem::getDirContent(LPWSTR path, DWORD type, DWORD flags)
+	stListaArchivos FileSystem::getDirContent(wstring path, wstring Filter, ContentDir type, DWORD flags)
 	{
 		int items = 0;
 		int pos = 0;
 		HANDLE isFind;
 		WIN32_FIND_DATA FindData;
-		WCHAR *ext = L"*";
+		wchar_t Ruta[MAX_PATH];
+
 		if (BuffTemp)
 			free(BuffTemp);
+		if (FechasCreacionTemp)
+			free(FechasCreacionTemp);
+		if (FechasModificacionTemp)
+			free(FechasModificacionTemp);
+		if (TamañosTemp)
+			free(TamañosTemp);
 
-		PathAddBackslashW(path);
-		if (type == ALL_FROM_PATH || ONLY_SUBDIR)
-			wcscat(path, ext);
-
-		isFind = FindFirstFileW(path, &FindData);
+		wcscpy(Ruta, path.c_str());
+		PathAddBackslashW(Ruta);
+		wcscat(Ruta, Filter.c_str());
+		isFind = FindFirstFileW(Ruta, &FindData);
 		BuffTemp = (WCHAR*)malloc(sizeof(wchar_t)*MAX_PATH);
 		TamañosTemp = (long long*)malloc(sizeof(long long));
 		FechasCreacionTemp = (long long*)malloc(sizeof(long long));
@@ -99,7 +88,11 @@ namespace MindSpy
 
 		do
 		{
+			if (!wcscmp(FindData.cFileName, L".") || !wcscmp(FindData.cFileName, L".."))
+				continue;
 			if (type == ONLY_SUBDIR && !(FindData.dwFileAttributes  & FILE_ATTRIBUTE_DIRECTORY))
+				continue;
+			if (type == ONLY_ARCHIVE && !(FindData.dwFileAttributes  & FILE_ATTRIBUTE_ARCHIVE))
 				continue;
 
 			wcscpy(&BuffTemp[getID(items)], FindData.cFileName);
@@ -127,46 +120,41 @@ namespace MindSpy
 			return stListaArchivos();
 	}
 
-	LPWSTR FileSystem::getWindowsPath()
+	wstring FileSystem::getWindowsPath()
 	{
-		ZeroMemory(&dirPath, sizeof(dirPath));
-		if (getSytemDir(dirPath, DIR_HOME_SYSTEM)) return dirPath;
-		return  false;
+		return this->getSystemDir(SystemFolder::DIR_HOME_SYSTEM);
 	}
 
-	LPWSTR FileSystem::getDesktopPath()
+	wstring FileSystem::getDesktopPath()
 	{
 
-		ZeroMemory(&dirPath, sizeof(dirPath));
-		if (getSytemDir(dirPath, DIR_DESKTOP)) return dirPath;
-		return  false;
+		return getSystemDir(SystemFolder::DIR_DESKTOP);
 	}
 
-	LPWSTR FileSystem::getDocumentsPath()
+	wstring FileSystem::getDocumentsPath()
 	{
-		ZeroMemory(&dirPath, sizeof(dirPath));
-		if (getSytemDir(dirPath, DIR_DOCUMENTS)) return dirPath;
-		return  false;
+		return getSystemDir(SystemFolder::DIR_DOCUMENTS);
 	}
 
-	LPWSTR FileSystem::getDowloadsPath()
+	wstring FileSystem::getDowloadsPath()
 	{
-		ZeroMemory(&dirPath, sizeof(dirPath));
-		if (getSytemDir(dirPath, DIR_DOWNLOADS)) return dirPath;
-		return  false;
+		return getSystemDir(SystemFolder::DIR_DOWNLOADS);
 	}
 
-	stListaArchivos FileSystem::getAllFiles()
+	stListaArchivos FileSystem::getAllFiles(wstring path, wstring Filter)
 	{
-		WCHAR rtPath[MAX_PATH];
-		RtlSecureZeroMemory(&path, sizeof(WCHAR));
-		RtlSecureZeroMemory(&rtPath, sizeof(WCHAR));
-
-		path = getDowloadsPath();
-		stListaArchivos stla = getDirContent(path, ALL_FROM_PATH, NULL);
-
-		for (int i = 0; i < stla.CantArchivos; i++)
-			std::wcout << &stla.Archivos[getID(i)] << std::endl;
-		return stla;
+		return getDirContent(path, Filter, ContentDir::ONLY_ARCHIVE, NULL);
 	}
+
+	stListaArchivos FileSystem::getAllDirs(wstring path, wstring Filter)
+	{
+		return getDirContent(path, Filter, ContentDir::ONLY_SUBDIR, NULL);
+	}
+
+	stListaArchivos FileSystem::getAll(wstring path, wstring Filter)
+	{
+		return getDirContent(path, Filter, ContentDir::ALL_FROM_PATH, NULL);
+	}
+
+	
 }
