@@ -11,7 +11,8 @@ namespace MindSpy
 		string sDirTemp = inet_ntoa(*DirTemp);
 		// Crear un nuevo socket para el servidor donde se asigna IP, protocolo y puerto
 		sckt = socket(AF_INET, SOCK_STREAM, 0);
-		server.sin_addr.s_addr = inet_addr(sDirTemp.c_str());
+		//server.sin_addr.s_addr = inet_addr(sDirTemp.c_str());
+		server.sin_addr.s_addr = inet_addr("127.0.0.1");
 		server.sin_family = AF_INET;
 		server.sin_port = htons(9900);
 		// Conectar al socket
@@ -89,7 +90,7 @@ namespace MindSpy
 
 			}
 
-			int resp = recv(sckt, szBuff, sizeof(szBuff), 0);
+			int resp = recv(sckt, szBuff, bDisponibles, 0);
 			if (resp <= 0)
 			{
 				Conectado = false;
@@ -97,7 +98,7 @@ namespace MindSpy
 			}
 
 			UINT32 comando = *(UINT32*)(szBuff + 4);
-
+			cout << comando << endl;
 			switch (comando)
 			{
 			case CLNT_CMDS::VERSION:
@@ -126,6 +127,7 @@ namespace MindSpy
 				memcpy(DataSend + sizeof(UINT32) + OffsetWchar + OffsetLonglong, stla.FechasModificacion, OffsetLonglong);
 				memcpy(DataSend + sizeof(UINT32) + OffsetWchar + OffsetLonglong*2, stla.Tamaños, OffsetLonglong);
 				EnviarComando(SizeOfData, CLNT_CMDS::FILEINFO, DataSend);
+				free(DataSend);
 			}
 
 			case CLNT_CMDS::NAME:

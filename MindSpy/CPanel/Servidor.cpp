@@ -52,7 +52,6 @@ namespace MindSpy
 			cout << "Conexion aceptada. IP: " << Conexiones[id].IP << endl;
 			CreateThread(NULL, NULL, &HiloConexionStatic, this, NULL, NULL);
 			while (!Conexiones[id].Activa) Sleep(30);
-			EnviarComando(Conexiones[id].IP, NULL, CLNT_CMDS::SYSINFO, NULL);
 		}
 	}
 
