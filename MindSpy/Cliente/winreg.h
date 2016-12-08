@@ -29,7 +29,7 @@ namespace MindSpy
 
 		DWORD regReadValue(RegData* regData, LPDWORD typeBuff, PVOID Buffer, DWORD sz);
 
-		bool regSetValue(RegData* regData, DWORD type, const void* buffer, DWORD bufferSize);
+		bool regSetValue(RegData* regData, DWORD valType, const void* buffer, DWORD bufferSize);
 		/**
 		 * \brief 
 		 * \param data 
