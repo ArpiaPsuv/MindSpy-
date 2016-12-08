@@ -26,6 +26,9 @@
     <ClInclude Include="FileSystem.h">
       <Filter>Cabeceras</Filter>
     </ClInclude>
+    <ClInclude Include="winreg.h">
+      <Filter>Cabeceras</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Cliente.cpp">
@@ -38,6 +41,9 @@
       <Filter>Codigo</Filter>
     </ClCompile>
     <ClCompile Include="FileSystem.cpp">
+      <Filter>Codigo</Filter>
+    </ClCompile>
+    <ClCompile Include="winreg.cpp">
       <Filter>Codigo</Filter>
     </ClCompile>
   </ItemGroup>

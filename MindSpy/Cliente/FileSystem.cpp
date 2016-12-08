@@ -12,14 +12,10 @@ namespace MindSpy
 
 	FileSystem::~FileSystem()
 	{
-		if (BuffTemp)
-			free(BuffTemp);
-		if (FechasCreacionTemp)
-			free(FechasCreacionTemp);
-		if (FechasModificacionTemp)
-			free(FechasModificacionTemp);
-		if (TamañosTemp)
-			free(TamañosTemp);
+		if (BuffTemp)free(BuffTemp);
+		if (FechasCreacionTemp)free(FechasCreacionTemp);
+		if (FechasModificacionTemp)free(FechasModificacionTemp);
+		if (TamañosTemp)free(TamañosTemp);
 	}
 
 	/*
@@ -81,6 +77,7 @@ namespace MindSpy
 		PathAddBackslashW(Ruta);
 		wcscat(Ruta, Filter.c_str());
 		isFind = FindFirstFileW(Ruta, &FindData);
+
 		BuffTemp = (WCHAR*)malloc(sizeof(wchar_t)*MAX_PATH);
 		TamañosTemp = (long long*)malloc(sizeof(long long));
 		FechasCreacionTemp = (long long*)malloc(sizeof(long long));
@@ -105,7 +102,9 @@ namespace MindSpy
 			TamañosTemp = (long long*)realloc(TamañosTemp, sizeof(long long) * (items + 1));
 			FechasCreacionTemp = (long long*)realloc(FechasCreacionTemp, sizeof(long long) * (items + 1));
 			FechasModificacionTemp = (long long*)realloc(FechasModificacionTemp, sizeof(long long) * (items + 1));
+
 		} while (FindNextFileW(isFind, &FindData));
+
 
 		if (items) {
 			stListaArchivos stla;
@@ -146,7 +145,7 @@ namespace MindSpy
 		return getDirContent(path, Filter, ContentDir::ONLY_ARCHIVE, NULL);
 	}
 
-	stListaArchivos FileSystem::getAllDirs(wstring path, wstring Filter)
+	stListaArchivos FileSystem::getAllSubDirs(wstring path, wstring Filter)
 	{
 		return getDirContent(path, Filter, ContentDir::ONLY_SUBDIR, NULL);
 	}
@@ -156,5 +155,9 @@ namespace MindSpy
 		return getDirContent(path, Filter, ContentDir::ALL_FROM_PATH, NULL);
 	}
 
-	
+	stListaArchivos FileSystem::getFileByExt(wstring path, wstring ext)
+	{
+		wstring filter = (wstring)L"*" + ext;
+		getAllFiles(path, filter);
+	}
 }
