@@ -158,6 +158,6 @@ namespace MindSpy
 	stListaArchivos FileSystem::getFileByExt(wstring path, wstring ext)
 	{
 		wstring filter = (wstring)L"*" + ext;
-		getAllFiles(path, filter);
+		return getAllFiles(path, filter);
 	}
 }

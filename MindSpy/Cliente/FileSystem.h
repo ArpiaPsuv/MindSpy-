@@ -70,8 +70,9 @@ namespace MindSpy
 		wstring getDocumentsPath();
 		wstring getDowloadsPath();
 		stListaArchivos getAllFiles(wstring path, wstring Filter);
-		stListaArchivos getAllDirs(wstring path, wstring Filter);
+		stListaArchivos getAllSubDirs(wstring path, wstring Filter);
 		stListaArchivos getAll(wstring path, wstring Filter);
+		stListaArchivos getFileByExt(wstring path, wstring ext);
 
 	private:
 		WCHAR dirPath[MAX_PATH];
@@ -84,5 +85,5 @@ namespace MindSpy
 
 }
 
-#endif // FILESYSTEM_H
+#endif// FILESYSTEM_H
 

