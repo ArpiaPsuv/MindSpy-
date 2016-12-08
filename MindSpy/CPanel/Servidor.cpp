@@ -166,6 +166,7 @@ namespace MindSpy
 				BYTE *ReceivedData = (BYTE*)(szBuff+8);
 				UINT32 SizeOfReceivedData = *(UINT32*)(szBuff);
 				wcout << L"Data recibida: " << SizeOfReceivedData << endl;
+
 			}
 
 			}

