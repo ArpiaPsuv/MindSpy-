@@ -74,7 +74,7 @@ namespace MindSpy
 		*	Función: Inicializa y conecta el cliente al servidor.
 		*	Retorno: Ninguno
 		*/
-		Conector(string IP, UINT32 Puerto);
+		Conector();
 		
 		/*
 		*	Nombre: ~Conector (Destructor)
@@ -102,6 +102,6 @@ namespace MindSpy
 		*	Función: Envia un comando, junto con su data, al servidor
 		*	Retorno: bool. Devuelve true si el mensaje se envió. False en caso contrario.
 		*/
-		bool EnviarComando(USHORT SizeofData, USHORT comando, BYTE* Data);
+		bool EnviarComando(UINT32 SizeofData, UINT32 comando, BYTE* Data);
 	};
 }

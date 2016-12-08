@@ -90,10 +90,11 @@ namespace MindSpy
 		{
 			if (type == ONLY_SUBDIR && !(FindData.dwFileAttributes  & FILE_ATTRIBUTE_DIRECTORY))
 				continue;
-
+			
 			wcscpy(&BuffTemp[getID(items++)], FindData.cFileName);
 			BuffTemp = (wchar_t*)realloc(BuffTemp, sizeof(wchar_t) * MAX_PATH * (items + 1));
 		} while (FindNextFileW(isFind, &FindData));
+
 		if (items) {
 			stListaArchivos stla;
 			stla.CantArchivos = items;
@@ -106,7 +107,6 @@ namespace MindSpy
 
 	LPWSTR FileSystem::getWindowsPath()
 	{
-
 		ZeroMemory(&dirPath, sizeof(dirPath));
 		if (getSytemDir(dirPath, DIR_HOME_SYSTEM)) return dirPath;
 		return  false;
@@ -136,7 +136,6 @@ namespace MindSpy
 
 	stListaArchivos FileSystem::getAllFiles()
 	{
-
 		WCHAR rtPath[MAX_PATH];
 		RtlSecureZeroMemory(&path, sizeof(WCHAR));
 		RtlSecureZeroMemory(&rtPath, sizeof(WCHAR));

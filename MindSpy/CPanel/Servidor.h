@@ -59,7 +59,7 @@ namespace MindSpy
 		*	Función: Envia un comando, junto con su data, al cliente
 		*	Retorno: bool. Devuelve true si el mensaje se envió. False en caso contrario.
 		*/
-		bool EnviarComando(char* IP, USHORT SizeofData, USHORT comando, BYTE* Data);
+		bool EnviarComando(char* IP, UINT32 SizeofData, UINT32 comando, BYTE* Data);
 		void IniciarEscucha();
 		int IpRegistrada(const char*IP);
 	};
