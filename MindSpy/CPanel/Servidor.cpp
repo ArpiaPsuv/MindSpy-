@@ -137,7 +137,12 @@ namespace MindSpy
 			if (!szBuff)
 				free(szBuff);
 			szBuff = (char*)realloc(szBuff, DataSize+8);
-			recv(Conexiones[MyID].c_socket, szBuff, DataSize+8, 0);
+
+			int res = 0;
+			while (res != DataSize+8)
+				int res = recv(Conexiones[MyID].c_socket, szBuff, DataSize+8, MSG_PEEK);
+
+			recv(Conexiones[MyID].c_socket, szBuff, DataSize + 8, 0);
 			UINT32 comando = *(UINT32*)(szBuff + sizeof(UINT32));
 
 			wcout << L"Data recibida: " << DataSize + 8 << L" bytes." << endl;
