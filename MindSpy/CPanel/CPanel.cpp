@@ -83,7 +83,7 @@ namespace MindSpy
 				wcsncpy(stfir.Path, L"C:\\Windows", 11);
 				stfir.Query = FILEINFO_QUERY::REQ_ONLY_ARCHIVE;
 				if (c.EnviarComando((char*)Op1.c_str(), sizeof(stFileInfoRequest), CLNT_CMDS::FILEINFO, (BYTE*)&stfir))
-					wcout << L"Solicitando información de archivos...";
+					wcout << L"Solicitando información de archivos..." << endl;
 				break;
 			}
 											  

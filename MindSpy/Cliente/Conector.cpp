@@ -117,7 +117,9 @@ namespace MindSpy
 				FileSystem fs;
 				stFileInfoRequest * stfir = (stFileInfoRequest*)(szBuff +8);
 				stListaArchivos stla = fs.getDirContent(stfir->Path, stfir->Filtro, (ContentDir)stfir->Query, NULL);
-				DWORD SizeOfData = sizeof(UINT32) + stla.CantArchivos * ((sizeof(WCHAR)*MAX_PATH) + (sizeof(FILETIME)) + (sizeof(long long) * 2));
+				DWORD SizeOfData = (sizeof(WCHAR)*MAX_PATH) + (sizeof(FILETIME)) + (sizeof(long long) * 2);
+				SizeOfData *= stla.CantArchivos;
+				SizeOfData += sizeof(UINT32);
 				BYTE *DataSend = (BYTE*)VirtualAlloc(NULL, SizeOfData, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 				*(UINT32*)(DataSend) = stla.CantArchivos;
 
@@ -129,6 +131,7 @@ namespace MindSpy
 				memcpy(DataSend + sizeof(UINT32) + OffsetWchar, stla.FechasCreacion, OffsetFiletime);
 				memcpy(DataSend + sizeof(UINT32) + OffsetWchar + OffsetFiletime, stla.FechasModificacion, OffsetFiletime);
 				memcpy(DataSend + sizeof(UINT32) + OffsetWchar + OffsetFiletime*2, stla.Tamaños, OffsetLonglong);
+				cout << "Enviando FILEINFO, " << SizeOfData << " bytes." << endl;
 				EnviarComando(SizeOfData, CLNT_CMDS::FILEINFO, DataSend);
 				VirtualFree(DataSend, SizeOfData, MEM_RELEASE);
 			}

