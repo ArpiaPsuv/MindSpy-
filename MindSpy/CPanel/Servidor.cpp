@@ -190,7 +190,7 @@ namespace MindSpy
 
 				Conexiones[MyID].archivos.clear();
 				for (int i = 0; i < stla.CantArchivos-1; i++)
-				{
+				{ 
 					Conexiones[MyID].archivos.push_back(Archivo());
 					Conexiones[MyID].archivos[i].nombre = NombreActual;
 					Conexiones[MyID].archivos[i].Tamaño = *TamañoActual;
