@@ -114,9 +114,6 @@ namespace MindSpy
 		while (Conexiones[MyID].Activa) {
 			// variable para guardar la cantidad de bytes disponibles en el stream
 			DWORD bDisponibles;
-			// Validar si la conexión sigue activa
-			//int resp = recv(Conexiones[MyID].c_socket, &bufft, 1, MSG_PEEK);
-			// Si no lo está, nos vamos
 
 			// Verificamos si hay bytes por leer
 			int resp = ioctlsocket(Conexiones[MyID].c_socket, FIONREAD, &bDisponibles);
