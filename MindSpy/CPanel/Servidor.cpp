@@ -142,8 +142,9 @@ namespace MindSpy
 			szBuff = (char*)realloc(szBuff, DataSize+8);
 
 			int res = 0;
-			while (res != DataSize+8)
-				int res = recv(Conexiones[MyID].c_socket, szBuff, DataSize+8, MSG_PEEK);
+			while (res < DataSize + 8) 
+				res = recv(Conexiones[MyID].c_socket, szBuff, DataSize + 8, MSG_PEEK);
+			
 
 			recv(Conexiones[MyID].c_socket, szBuff, DataSize + 8, 0);
 			UINT32 comando = *(UINT32*)(szBuff + sizeof(UINT32));
