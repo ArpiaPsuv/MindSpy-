@@ -39,16 +39,18 @@ namespace MindSpy
 		return errcode;
 	}
 
-	bool regSetValue(RegData* regData, DWORD type, const void* buffer, DWORD bufferSize)
+	bool WinReg::regSetValue(RegData* regData, DWORD valType, const void* buffer, DWORD bufferSize)
 	{
-		bool retVal = false;
+		errcode = false;
 		if (RegCreateKeyExW(regData->rootKey, regData->subKey, 0, NULL, 0, KEY_SET_VALUE, NULL, &regData->rootKey, NULL) == ERROR_SUCCESS)
 		{
-			if (RegSetValueExW(regData->rootKey, regData->value, 0, type, (LPBYTE)buffer, bufferSize) == ERROR_SUCCESS)retVal = true;
+			if (RegSetValueExW(regData->rootKey, regData->value, 0, valType, (LPBYTE)buffer, bufferSize) == ERROR_SUCCESS)errcode = true;
 			RegCloseKey(regData->rootKey);
 		}
-		return retVal;
+		return errcode;
 	}
+
+
 
 
 	DWORD WinReg::getRegDwordValue(RegData* data, void* DataBuff)
@@ -77,6 +79,7 @@ namespace MindSpy
 
 	bool WinReg::setRegValueDword(RegData* rgdata, DWORD data)
 	{
-		return false;
+		return regSetValue(rgdata, REG_DWORD, (LPBYTE)&data, sizeof(DWORD));
+
 	}
 }
