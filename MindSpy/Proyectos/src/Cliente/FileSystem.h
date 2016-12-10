@@ -7,7 +7,7 @@
 #include <Windows.h>
 #include <iostream>
 #include <string>
-#include "Datos.h"
+#include "../Datos.h"
 using namespace std;
 #define getID(x) (MAX_PATH * x)
 

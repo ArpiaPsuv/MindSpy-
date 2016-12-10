@@ -3,7 +3,7 @@
 #include <Windows.h>
 #include <Iphlpapi.h>
 #include <VersionHelpers.h>
-#include "Datos.h"
+#include "../Datos.h"
 using namespace std;
 
 namespace MindSpy

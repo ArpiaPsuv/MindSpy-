@@ -3,7 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <cstdio>
-#include "../Cliente/Datos.h"
+#include "../Datos.h"
 using namespace std;
 #define NO_PUERTO			9900
 #define NO_SRV_CMDS			3
@@ -20,7 +20,7 @@ namespace MindSpy
 			bool Activa;
 			SOCKET c_socket;
 			stSystemInfoResponse SistemaCliente;
-			vector <Archivo> archivos;
+			vector <stFile> archivos;
 		} CONEXION, *PCONEXION;
 		WSADATA wsa;
 		SOCKET s;

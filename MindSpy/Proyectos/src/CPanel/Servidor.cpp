@@ -63,7 +63,7 @@ namespace MindSpy
 	}
 
 	int Servidor::IpRegistrada(const char*IP) {
-		for (int i = 0; i < Conexiones.size(); i++)
+		for (unsigned int i = 0; i < Conexiones.size(); i++)
 		{
 			if (!strcmp(IP, Conexiones[i].IP) && Conexiones[i].Activa)
 			{
@@ -195,9 +195,9 @@ namespace MindSpy
 				long long *TamañoActual = TamInicio;
 
 				Conexiones[MyID].archivos.clear();
-				for (int i = 0; i < stla.CantArchivos-1; i++)
+				for (unsigned int i = 0; i < stla.CantArchivos-1; i++)
 				{ 
-					Conexiones[MyID].archivos.push_back(Archivo());
+					Conexiones[MyID].archivos.push_back(stFile());
 					Conexiones[MyID].archivos[i].nombre = NombreActual;
 					Conexiones[MyID].archivos[i].Tamaño = *TamañoActual;
 					Conexiones[MyID].archivos[i].FechaCreacion = *FCActual;

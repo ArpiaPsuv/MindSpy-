@@ -71,7 +71,7 @@ namespace MindSpy
 		{
 			LPWSTR tmpBuf[200];
 			wcscpy(LPWSTR(tmpBuf), buffer);
-			if (tmpBuf == NULL || ExpandEnvironmentStringsW(LPWSTR(tmpBuf), buffer, bufferSz) == 0);
+			if (tmpBuf == NULL || ExpandEnvironmentStringsW(LPWSTR(tmpBuf), buffer, bufferSz) == 0) return 1;
 		}
 		return  errcode;
 
