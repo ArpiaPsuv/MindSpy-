@@ -118,7 +118,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\CPanel\CPanel.cpp" />
-    <ClCompile Include="src\CPanel\CPanel_main.cpp" />
+    <ClCompile Include="src\CPanel\main.cpp" />
     <ClCompile Include="src\CPanel\Servidor.cpp" />
   </ItemGroup>
   <ItemGroup>

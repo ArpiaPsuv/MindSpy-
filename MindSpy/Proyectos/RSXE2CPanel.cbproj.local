@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2016/11/25 14:12:26.000.906,=D:\DOCUMENTOS\RAD Studio\Projects\Unit1.cpp</Transaction>
+    <Transaction>2016/12/07 22:04:59.000.763,=D:\DOCUMENTOS\RAD Studio\Projects\Unit1.cpp</Transaction>
+    <Transaction>2016/12/10 16:13:07.618,=D:\DOCUMENTOS\RAD Studio\Projects\File1.cpp</Transaction>
+    <Transaction>2016/12/10 16:14:10.155,D:\PROYECTOS_PROGRAMACION\Git\MindSpy-\MindSpy\Proyectos\CPanel.cbproj=D:\DOCUMENTOS\RAD Studio\Projects\Project1.cbproj</Transaction>
+    <Transaction>2016/12/10 16:14:25.047,=D:\PROYECTOS_PROGRAMACION\Git\MindSpy-\MindSpy\Proyectos\src\Datos.h</Transaction>
+    <Transaction>2016/12/10 16:14:31.751,=D:\PROYECTOS_PROGRAMACION\Git\MindSpy-\MindSpy\Proyectos\src\CPanel\CPanel.cpp</Transaction>
+    <Transaction>2016/12/10 16:14:31.754,=D:\PROYECTOS_PROGRAMACION\Git\MindSpy-\MindSpy\Proyectos\src\CPanel\CPanel.h</Transaction>
+    <Transaction>2016/12/10 16:14:31.757,=D:\PROYECTOS_PROGRAMACION\Git\MindSpy-\MindSpy\Proyectos\src\CPanel\main.cpp</Transaction>
+    <Transaction>2016/12/10 16:14:31.778,=D:\PROYECTOS_PROGRAMACION\Git\MindSpy-\MindSpy\Proyectos\src\CPanel\Servidor.cpp</Transaction>
+    <Transaction>2016/12/10 16:14:31.782,=D:\PROYECTOS_PROGRAMACION\Git\MindSpy-\MindSpy\Proyectos\src\CPanel\Servidor.h</Transaction>
+    <Transaction>2016/12/10 16:15:54.925,D:\PROYECTOS_PROGRAMACION\Git\MindSpy-\MindSpy\Proyectos\RSXE2CPanel.cbproj=D:\PROYECTOS_PROGRAMACION\Git\MindSpy-\MindSpy\Proyectos\CPanel.cbproj</Transaction>
+  </Transactions>
+</BorlandProject>

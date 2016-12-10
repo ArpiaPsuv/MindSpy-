@@ -14,10 +14,10 @@
     <ClCompile Include="src\CPanel\CPanel.cpp">
       <Filter>Archivos de código fuente</Filter>
     </ClCompile>
-    <ClCompile Include="src\CPanel\CPanel_main.cpp">
+    <ClCompile Include="src\CPanel\Servidor.cpp">
       <Filter>Archivos de código fuente</Filter>
     </ClCompile>
-    <ClCompile Include="src\CPanel\Servidor.cpp">
+    <ClCompile Include="src\CPanel\main.cpp">
       <Filter>Archivos de código fuente</Filter>
     </ClCompile>
   </ItemGroup>
