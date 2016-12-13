@@ -1,28 +1,48 @@
+/**
+* @file Sistema.h
+* @author Carlos D. Alvarez
+* @date 10/12/2016
+* @brief Define la clase Sistema
+*/
 #pragma once
 #include <string>
 #include <Windows.h>
 #include <Iphlpapi.h>
-#include <VersionHelpers.h>
+#include <stdio.h>
 #include "../Datos.h"
 using namespace std;
 
 namespace MindSpy
 {
-	// Clase que recopila información de sistema
+	/**
+	* @class Sistema
+	* @brief Clase que recopila información del sistema del cliente
+	*/
 	class Sistema
 	{
 	private:
-		// Variable para guardar la información obtenida
-		stSystemInfoResponse info ; 
-		// Obtener la MAC de la interfaz de red conectada al router
+		//! Variable para guardar la información obtenida
+		stSystemInfoResponse info; 
+
+		/**
+		* @brief Obtener la MAC de la interfaz de red conectada al router
+		*/ 
 		void ObtenerMAC();
-		// Obtiene datos sobre la copia de Windows instalada
+
+		/**
+		* @brief Cargar la version del OS
+		*/
 		void ObtenerVersionWindows();
 
 	public:
-		// Constructor, llama a los métodos de arriba y llena la estructura
+		/**
+		* @brief Constructor, llama a los métodos informativos y llena la estructura
+		*/
 		Sistema();
-		// Devuelve la estructura
+
+		/**
+		* @brief Devuelve la estructura con la información
+		*/
 		stSystemInfoResponse getInfo(); 
 	};
 }

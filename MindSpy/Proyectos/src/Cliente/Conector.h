@@ -1,3 +1,10 @@
+/**
+* @file Conector.h
+* @author Carlos D. Alvarez
+* @date 10/12/2016
+* @brief Define la clase Conector
+*/
+
 #pragma once
 #include <windows.h>
 #include <string>
@@ -20,35 +27,31 @@ using namespace std;
 
 namespace MindSpy
 {
-	// Métodos de conexión y comunicación con el servidor
+	//! Métodos de conexión y comunicación con el servidor
 	class Conector {
 	private:
-		// Data del socket
+		//! Data del socket
 		WSADATA wsd;
-		// Socket del cliente
+		//! Socket del cliente
 		SOCKET sckt;
-		// Información del servidor
+		//! Información del servidor
 		sockaddr_in server;
-		// Información de sistema
+		//! Información de sistema
 		Sistema sys;
-		// Estatus de la conexión
+		//! Estatus de la conexión
 		bool Conectado;
-		// Mensaje del server
+		//! Mensaje del server
 		char msg[MAX_BUFFER];
-		/*
-		*	Nombre: Escuchar
-		*	Parámetros: Ninguno
-		*	Función: Ciclo de escucha del cliente. Procesa mensajes
-		*	Retorno: Ninguno
+
+		/**
+		*	@brief Ciclo de escucha del cliente. Procesa mensajes
 		*/
 		void Escuchar();
 
-		/*
-		*	Nombre: HiloProc
-		*	Parámetros: 
-		*		-LPARAM l: Párámetro que contiene un puntero a la clase Conector.
-		*	Función: Correrá en un hilo nuevo. Llama a la función Escuchar.
-		*	Retorno: unsigned long int, Siempre devuelve TRUE.
+		/**
+		* @brief Correrá en un hilo nuevo. Llama a la función Escuchar.
+		* @param[in] l Párámetro que contiene un puntero a la clase Conector.
+		* @return Siempre devuelve TRUE.
 		*/
 		static DWORD WINAPI HiloProc(LPARAM l)
 		{
@@ -57,51 +60,43 @@ namespace MindSpy
 			return TRUE;
 		}
 
-		/*
-		*	Nombre: TipoComando
-		*	Parámetros: 
-				-char* c: Texto del comando a buscar
-		*	Función: Recorre la lista de comandos en busca de "c" para obtener su ID.
-		*	Retorno: int. Si la función tiene éxito, devuelve el ID del comando. Sino, devuelve COMANDO_NO_EXISTENTE
+		/**
+		* @brief Recorre la lista de comandos en busca de "c" para obtener su ID.
+		* @param[in] c Texto del comando a buscar
+		* @return Si la función tiene éxito, devuelve el ID del comando. Sino, devuelve COMANDO_NO_EXISTENTE
 		*/
 		int TipoComando(const char*c);
 
 	public:
-		/*
-		*	Nombre: Conector (Constructor)
-		*	Parámetros: 
-				- string IP: Dirección IP del servidor a conectarse
-				- UINT32 Puerto: Número de puerto de escucha del servidor
-		*	Función: Inicializa y conecta el cliente al servidor.
-		*	Retorno: Ninguno
+		/**
+		* @brief Constructor, inicializa y conecta el cliente al servidor.
 		*/
 		Conector();
 		
-		/*
-		*	Nombre: ~Conector (Destructor)
-		*	Parámetros: Ninguno
-		*	Función: Libera el socket y memoria dinámica reservada
-		*	Retorno: Ninguno
+		/**
+		* @brief Destructor, Libera el socket y memoria dinámica reservada
 		*/
 		~Conector();
 
-		/*
-		*	Nombre: Listo
-		*	Parámetros: Ninguno
-		*	Función: Indica si el cliente está conectado
-		*	Retorno: bool. Devuelve true si el cliente está conectado. false en caso contrario.
+		/**
+		* @brief Indica si el cliente está conectado
+		* @return true si el cliente está conectado. false en caso contrario.
 		*/
 		bool Listo();
 
-		/*
-		*	Nombre: EnviarComando
-		*	Parámetros: 
-				-USHORT SizeofData: Tamaño de la data a enviar
-				-USHORT comando: Número del comando a enviar
-				-BYTE* Data: Puntero a la data que se enviará. Este puntero puede ser a cualquier estructura
-							 de datos compatible.
-		*	Función: Envia un comando, junto con su data, al servidor
-		*	Retorno: bool. Devuelve true si el mensaje se envió. False en caso contrario.
+		/**
+		* @brief	Envia un comando, junto con su data, al cliente
+		* @param [in]	SizeofData	Information describing the sizeof.
+		* @param [in]	comando   	The comando.
+		* @param [in]	Data	  	If non-null, the data.
+		*
+		* @return	true si se pudo enviar el comando, false en caso contrario
+		* @note
+		*	La estructura de los paquetes a enviar, es siempre la misma, independientemente de
+		*	los datos a enviar. Sin embargo, el tamaño de dichos datos puede variar.<br>
+		*	Los primeros cuatro bytes del paquete, corresponden al tamaño del paquete. Los segundos
+		*	cuatro bytes corresponden al comando asociado a la data y del octavo byte en adelante,
+		*	se ubica la data a enviar.
 		*/
 		bool EnviarComando(UINT32 SizeofData, UINT32 comando, BYTE* Data);
 	};

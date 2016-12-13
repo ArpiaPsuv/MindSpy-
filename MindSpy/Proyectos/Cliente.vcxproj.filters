@@ -23,7 +23,7 @@
     <ClCompile Include="src\Cliente\Sistema.cpp">
       <Filter>Archivos de código fuente</Filter>
     </ClCompile>
-    <ClCompile Include="src\Cliente\winreg.cpp">
+    <ClCompile Include="src\Cliente\Registro.cpp">
       <Filter>Archivos de código fuente</Filter>
     </ClCompile>
   </ItemGroup>
@@ -40,10 +40,10 @@
     <ClInclude Include="src\Cliente\Sistema.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="src\Cliente\winreg.h">
+    <ClInclude Include="src\Datos.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="src\Datos.h">
+    <ClInclude Include="src\Cliente\Registro.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>

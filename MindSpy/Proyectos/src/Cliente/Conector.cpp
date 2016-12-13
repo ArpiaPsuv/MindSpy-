@@ -1,3 +1,10 @@
+/**
+* @file Conector.cpp
+* @author Carlos D. Alvarez
+* @date 10/12/2016
+* @brief Implementa la clase Conector
+*/
+
 #include "Conector.h"
 
 namespace MindSpy

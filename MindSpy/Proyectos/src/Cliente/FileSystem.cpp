@@ -1,3 +1,10 @@
+/**
+* @file FileSystem.h
+* @author Carlos D. Alvarez
+* @date 10/12/2016
+* @brief Define la clase FileSystem
+*/
+
 #include "FileSystem.h"
 
 namespace MindSpy
@@ -17,15 +24,14 @@ namespace MindSpy
 		if (FechasModificacionTemp)free(FechasModificacionTemp);
 		if (TamañosTemp)free(TamañosTemp);
 	}
-
-	/*
-	*		-----------FUNCIÓN NO COMPATIBLE CON WINXP-----------
-	*		USAR SHGetFolderPath EN CASO DE QUE EL SISTEMA SEA V5
-	*/
+	
 	wstring FileSystem::getSystemDir(SystemFolder Dir)
 	{
+		//! Ruta temporal
 		WCHAR path[MAX_PATH];
+		//! Puntero a ruta temporal
 		wchar_t *ppath;
+		//! String unicode temporal para el retorno de la función		
 		wstring retorno;
 
 		switch (Dir) {
@@ -58,10 +64,13 @@ namespace MindSpy
 
 	stListaArchivos FileSystem::getDirContent(wstring path, wstring Filter, ContentDir type, DWORD flags)
 	{
+		//! Lista de items actual
 		int items = 0;
-		int pos = 0;
+		//! Handle de FindFirstFileW
 		HANDLE isFind;
-		WIN32_FIND_DATA FindData;
+		//! Datos del archivo
+		WIN32_FIND_DATAW FindData;
+		//! Ruta temporal
 		wchar_t Ruta[MAX_PATH];
 
 		if (BuffTemp)
@@ -74,7 +83,14 @@ namespace MindSpy
 			free(TamañosTemp);
 
 		wcscpy(Ruta, path.c_str());
-		PathAddBackslashW(Ruta);
+		// En lugar de:
+		//	PathAddBackslashW(Ruta);
+		// nos evitamos incluir una lib entera solo para ella
+		if (Ruta[wcslen(Ruta)-1] == L'\\') {
+			int r = wcslen(Ruta)-1;
+			Ruta[r] = L'\\';
+			Ruta[r+1] = 0;
+		}
 		wcscat(Ruta, Filter.c_str());
 		isFind = FindFirstFileW(Ruta, &FindData);
 
@@ -156,6 +172,7 @@ namespace MindSpy
 
 	stListaArchivos FileSystem::getFileByExt(wstring path, wstring ext)
 	{
+		//! Filtro a pasarle a getAllFilesm basado en la extensión
 		wstring filter = (wstring)L"*" + ext;
 		return getAllFiles(path, filter);
 	}

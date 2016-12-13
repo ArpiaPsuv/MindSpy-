@@ -19,6 +19,7 @@ using namespace std;
 namespace MindSpy
 {
 	/**
+	* @class CPanel
 	* Interactúa con el servidor
 	*	
 	* Provee una interfaz de comunicación con el servidor.<br>

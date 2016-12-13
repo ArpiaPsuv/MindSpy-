@@ -70,6 +70,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IntDir>$(ProjectDir)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IncludePath>C:\Program Files\Microsoft Visual Studio 2017\Community\VC\Tools\MSVC\14.10.24728\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -120,15 +121,15 @@
     <ClCompile Include="src\Cliente\Cliente.cpp" />
     <ClCompile Include="src\Cliente\Conector.cpp" />
     <ClCompile Include="src\Cliente\FileSystem.cpp" />
+    <ClCompile Include="src\Cliente\Registro.cpp" />
     <ClCompile Include="src\Cliente\Sistema.cpp" />
-    <ClCompile Include="src\Cliente\winreg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Cliente\Cliente.h" />
     <ClInclude Include="src\Cliente\Conector.h" />
     <ClInclude Include="src\Cliente\FileSystem.h" />
+    <ClInclude Include="src\Cliente\Registro.h" />
     <ClInclude Include="src\Cliente\Sistema.h" />
-    <ClInclude Include="src\Cliente\winreg.h" />
     <ClInclude Include="src\Datos.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

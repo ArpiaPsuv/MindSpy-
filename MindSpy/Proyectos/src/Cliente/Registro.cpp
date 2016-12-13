@@ -1,5 +1,4 @@
-#include "Windows.h"
-#include "winreg.h"
+#include "Registro.h"
 
 
 namespace MindSpy
@@ -16,16 +15,6 @@ namespace MindSpy
 
 
 	}
-
-
-	/**
-	 * \brief
-	 * \param regData
-	 * \param typeBuff
-	 * \param Buffer
-	 * \param sz
-	 * \return
-	 */
 	DWORD WinReg::regReadValue(RegData* regData, LPDWORD typeBuff, PVOID Buffer, DWORD sz)
 	{
 

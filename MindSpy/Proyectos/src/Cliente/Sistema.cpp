@@ -1,15 +1,20 @@
+/**
+* @file Sistema.cpp
+* @author Carlos D. Alvarez
+* @date 10/12/2016
+* @brief Implementa la clase Sistema
+*/
 #include "Sistema.h"
 
 namespace MindSpy
 {
 	void Sistema::ObtenerMAC()
 	{
-		// Crear la estrcutrura que va a alojar la información de los adaptadores
-		// Es una lista enlazada
+		//! Estrcutrura que va a alojar la información de los adaptadores. Es una lista enlazada
 		PIP_ADAPTER_INFO AdapterInfo;
-		// Tamaño de la estructura
+		//! Tamaño de la estructura
 		DWORD dwBufLen = sizeof(AdapterInfo);
-		// Varuable para guardar la MAC
+		//! Variable para guardar la MAC
 		static wchar_t mac_addr[18];
 		// Reservar memoria preliminar para la estructura
 		AdapterInfo = (IP_ADAPTER_INFO *)malloc(dwBufLen);
@@ -21,7 +26,7 @@ namespace MindSpy
 			free(AdapterInfo);
 			AdapterInfo = (IP_ADAPTER_INFO*)malloc(dwBufLen);
 		}
-		// Se crea una copia del puntero para liberarla al final, ya que el puntero cambia
+		//! Se crea una copia del puntero para liberarla al final, ya que el puntero cambia
 		PIP_ADAPTER_INFO ParaLiberar = AdapterInfo;
 		// Una vez con el tamaño correcto, se obtiene la info
 		if (GetAdaptersInfo(AdapterInfo, &dwBufLen) == ERROR_SUCCESS)
@@ -49,20 +54,24 @@ namespace MindSpy
 			// Liberamos la memoria
 			free(ParaLiberar);
 		}
+		return;
 	}
 
 	void Sistema::ObtenerVersionWindows()
 	{
-		// RtlGetVersion es una función de la API del WDK. En teoría, funciona solo en modo kernel bajo un IRQL >5
-		// Su equivalente en el Windows SDK está en desuso, así que se usará esta.
-		// Se crea un puntero a esa función y se obtiene su dirección válida con GetProcAddress.
+		/**
+		* RtlGetVersion es una función de la API del WDK. 
+		* @details En teoría, funciona solo en modo kernel bajo un IRQL >5
+		* Su equivalente en el Windows SDK está en desuso, así que se usará esta.
+		* Se crea un puntero a esa función y se obtiene su dirección válida con GetProcAddress.
+		*/
 		void (__stdcall * RtlGetVersionW)(POSVERSIONINFOEXW);
 		RtlGetVersionW = (void(__stdcall*)(POSVERSIONINFOEXW)) GetProcAddress(LoadLibraryW(L"ntdll.dll"), "RtlGetVersion");
 		// Si GetProcAddress falla (algo poco probable), el constructor termina
 		if (!RtlGetVersionW)
 			return;
 
-		// Se declara la estructura para alojar la info, y se asigna su tamaño
+		//! Se declara la estructura para alojar la info, y se asigna su tamaño
 		OSVERSIONINFOEXW oviex;
 		oviex.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXW);
 		// Se obtiene la info
@@ -73,13 +82,16 @@ namespace MindSpy
 		info.Build = oviex.dwBuildNumber;
 		info.VersionMayor = (UINT16)oviex.dwMajorVersion;
 		info.VersionMenor = (UINT16)oviex.dwMinorVersion;
+		
+		//! Valdrá TRUE si el OS es de 64 bits
 		BOOL wow;
 
+		//! Contiene el Handle del proceso abierto
 		HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, GetCurrentProcessId());
 		IsWow64Process(hProcess, &wow);
 		CloseHandle(hProcess);
 		info.Arquitectura = wow ? 64 : 32;
-
+		info.EsWindowsServer = false;
 		switch (info.VersionMayor)
 		{
 		case 10:
@@ -95,21 +107,27 @@ namespace MindSpy
 			case 2:
 				if (oviex.wProductType == VER_NT_WORKSTATION)
 					wcsncpy(info.NombreOS, L"Windows 8", 64);
-				else
+				else {
 					wcsncpy(info.NombreOS, L"Windows Server 2012", 64);
+					info.EsWindowsServer = true;
+				}
 				break;
 			case 1:
 				if (oviex.wProductType == VER_NT_WORKSTATION)
 					wcsncpy(info.NombreOS, L"Windows 7", 64);
-				else
+				else {
 					wcsncpy(info.NombreOS, L"Windows Server 2008 R2", 64);
+					info.EsWindowsServer = true;
+				}
 				break;
 
 			case 0:
 				if (oviex.wProductType == VER_NT_WORKSTATION)
 					wcsncpy(info.NombreOS, L"Windows Vista", 64);
-				else
+				else {
 					wcsncpy(info.NombreOS, L"Windows Server 2008", 64);
+					info.EsWindowsServer = true;
+				}
 				break;
 			}
 
@@ -118,12 +136,15 @@ namespace MindSpy
 			switch (info.VersionMenor)
 			{
 			case 2:
-				if (oviex.wSuiteMask == VER_SUITE_WH_SERVER) 
+				if (oviex.wSuiteMask == VER_SUITE_WH_SERVER) {
 					wcsncpy(info.NombreOS, L"Windows Home Server", 64);
-				else if (oviex.wProductType = VER_NT_WORKSTATION) 
+					info.EsWindowsServer = true;
+				} else if (oviex.wProductType == VER_NT_WORKSTATION) {
 					wcsncpy(info.NombreOS, L"Windows XP Professional, x64 Edition", 64);
-				else
+				} else {
 					wcsncpy(info.NombreOS, L"Windows Server 2003", 64);
+					info.EsWindowsServer = true;
+				}
 				break;
 
 			case 1:
@@ -144,47 +165,16 @@ namespace MindSpy
 				break;
 			}
 		}
-
-		/*
-		*			MÉTODO POR EL REGISTRO DE WINDOWS
-		*
-		HKEY Clave;
-		int r = RegOpenKeyEx(HKEY_LOCAL_MACHINE,
-		L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
-		NULL,
-		KEY_QUERY_VALUE,
-		&Clave);
-
-		if (r != ERROR_SUCCESS)
-		return;
-
-		DWORD TipoDst;
-		DWORD Guardados=8;
-		char szBuild[8];
-		r = RegGetValueA(Clave, "", "CurrentBuild", RRF_RT_ANY, &TipoDst, &szBuild, &Guardados);
-		r = RegGetValueA(Clave, "", "ProductName", RRF_RT_ANY, &TipoDst, &info.NombreOS, &Guardados);
-		r = RegGetValueA(Clave, "", "EditionID", RRF_RT_ANY, &TipoDst, &info.TipoLicencia, &Guardados);
-		r = RegGetValueA(Clave, "", "RegisteredOwner", RRF_RT_ANY, &TipoDst, &info.NombreInstalador, &Guardados);
-		RegGetValue(Clave, L"", L"CurrentMajorVersionNumber", RRF_RT_REG_DWORD, &TipoDst, &info.VersionMayor, &Guardados);
-		RegGetValue(Clave, L"", L"CurrentMinorVersionNumber", RRF_RT_REG_DWORD, &TipoDst, &info.VersionMenor, &Guardados);
-		RegCloseKey(Clave);
-		info.Build = atoi(szBuild);
-		*
-		*
-		*/
 	}
 
 	Sistema::Sistema()
 	{
 		// Se inicializan todos los datos de la estructura
+		//! Almacenará el nombre del usuario actual
 		DWORD bufflen = 64;
 		GetUserNameW(info.NombreUsuario, &bufflen);
 		ObtenerMAC();
 		ObtenerVersionWindows();
-		if (IsWindowsServer())
-			info.EsWindowsServer = true;
-		else
-			info.EsWindowsServer = false;
 	}
 
 	stSystemInfoResponse Sistema::getInfo()

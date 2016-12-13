@@ -1,4 +1,4 @@
-/**
+Ôªø/**
 * @file Datos.h
 * @author Carlos D. Alvarez
 * @date 10/12/2016
@@ -6,25 +6,13 @@
 */
 
 #pragma once
-#ifndef _DATOS_H
-#define _DATOS_H
 #include <string>
 #include <windows.h>
-/**
-* @def MAX_BUFFER
-* TamaÒo del buffer m·ximo de entrada
-*/
+
 #define MAX_BUFFER 4096
-/**
-* @def getID(x)
-* Obtiene el elemento x, de un arreglo de wchar, donde cada elemento tiene MAX_PATH caracteres
-*/
 #define getID(x) (MAX_PATH * x)
-/**
-* @def MAKELONGLONG(hi, lo)
-* Convierte dos DWORD en un LONGLONG.
-*/
 #define MAKELONGLONG(hi, lo)    ((LONGLONG(DWORD(hi) & 0xffffffff) << 32 ) | LONGLONG(DWORD(lo) & 0xffffffff))
+
 using namespace std;
 namespace MindSpy
 {
@@ -32,26 +20,40 @@ namespace MindSpy
 	* @enum CLNT_CMDS
 	* Constantes de los comandos enviados desde y hacia el servidor
 	*/
-	enum CLNT_CMDS {	
-		CLOSE,			// Cerrar la conexion
-		NAME,			// Obtener nombre del servidor
-		VERSION,		// Version del cliente
-		SYSINFO,		// InformaciÛn del sistema
-		FILEINFO,		// InformaciÛn de archivos
-		REGINFO,		// InformaciÛn del registro
-		MENSAJE			// Mensaje desde el servidor
+	enum CLNT_CMDS 
+	{	
+		//! Cerrar la conexion
+		CLOSE,
+		//! Obtener nombre del servidor
+		NAME,	
+		//! Version del cliente
+		VERSION,	
+		//! Informaci√≥n del sistema
+		SYSINFO,	
+		//! Informaci√≥n de archivos
+		FILEINFO,
+		//! Informaci√≥n del registro
+		REGINFO,
+		//! Mensaje desde el servidor
+		MENSAJE			
 	};
 
 	/**
 	* @enum INTERNOS_CMDS
 	* Constantes de los comandos del panel de control
 	*/
-	enum INTERNOS_CMDS {
+	enum INTERNOS_CMDS 
+	{
+		//! Solicitar cambio de alias al CPanel
 		REQ_ALIAS,
-		REQ_ENVIAR,
+		//! Enviar mensaje al cliente
+		REQ_ENVIAR,	
+		//! Solicitar informaci√≥n de sistema al cliente
 		REQ_SYSINFO,
-		REQ_REGINFO,
-		REQ_FILEINFO
+		//! Solicitar clave del registro al cliente
+		REQ_REGINFO,	
+		//! Solicitar archivos o directorios al cliente
+		REQ_FILEINFO	
 	};
 
 	/**
@@ -60,64 +62,91 @@ namespace MindSpy
 	*/
 	enum FILEINFO_QUERY
 	{
-		REQ_ALL_FROM_PATH,
+		//! Todos los archivos y directorios
+		REQ_ALL_FROM_PATH,	
+		//! Solo directorios
 		REQ_ONLY_SUBDIR,
-		REQ_ONLY_ARCHIVE
-	};
-
-	/**
-	* @struct stSystemInformation
-	* Contiene los datos b·sicos del sistema operativo del cliente
-	*/
-	struct stSystemInfoResponse {
-		UINT32 Build;					//! CompilaciÛn del OS
-		UINT16 VersionMayor;			//! VersiÛn mayor del OS
-		UINT16 VersionMenor;			//! VersiÛn menor del OS
-		UINT16 Arquitectura;			//! Arquitectura del OS
-		WCHAR NombreOS[64];				//! Nombre del OS basado en la versiÛn
-		WCHAR MAC[18];					//! DirecciÛn fÌsica de la interface de red conectada al router
-		WCHAR NombreUsuario[64];		//! Nombre del usuario que usa el cliente
-		bool EsWindowsServer;			//! DetecciÛn para Windows server
+		//! Solo archivos
+		REQ_ONLY_ARCHIVE	
 	};
 
 	/**
 	* @struct stFileInfoRequest
 	* Contiene los campos necesarios para realizar una consulta de archivos
 	*/
-	struct stFileInfoRequest {
-		UINT8 Query;
-		WCHAR Path[MAX_PATH];
-		WCHAR Filtro[10];
+	struct stFileInfoRequest 
+	{
+		//! Tipo de consulta
+		UINT8 Query;		
+		//! Ruta de la consulta
+		WCHAR Path[MAX_PATH];	
+		//! Criterio de b√∫squeda, se permiten comodines * y ?
+		WCHAR Filtro[10];				
+	};
+
+	/**
+	* @struct stSystemInfoResponse
+	* Contiene los datos b√°sicos del sistema operativo del cliente
+	*/
+	struct stSystemInfoResponse 
+	{
+		//! Compilaci√≥n del OS (x.x.<b>x</b>)
+		UINT32 Build;	
+		//! Versi√≥n mayor del OS (<b>x</b>.x.x)
+		UINT16 VersionMayor;	
+		//! Versi√≥n menor del OS (x.<b>x</b>.x)
+		UINT16 VersionMenor;	
+		//! Arquitectura del OS
+		UINT16 Arquitectura;	
+		//! Nombre del OS basado en la versi√≥n
+		WCHAR NombreOS[64];		
+		//! Direcci√≥n f√≠sica de la interface de red conectada al router
+		WCHAR MAC[18];			
+		//! Nombre del usuario que usa el cliente
+		WCHAR NombreUsuario[64];	
+		//! Detecci√≥n para Windows server
+		bool EsWindowsServer;			
 	};
 
 	/**
 	* @struct stListaArchivos
 	* Almacena los datos de una cantidad indeterminada de archivos o carpetas
+	* para enviarlos al servidor
 	*/
-	struct stListaArchivos {
-		UINT32 CantArchivos;
-		WCHAR* Archivos;
-		PFILETIME FechasCreacion;
-		PFILETIME FechasModificacion;
-		PLONGLONG TamaÒos;
+	struct stListaArchivos 
+	{
+		//! Cantidad de archivos en la lista
+		UINT32 CantArchivos;	
+		//! Lista de archivos
+		WCHAR* Archivos;		
+		//! Fechas de creaci√≥n de cada uno de los archivos
+		PFILETIME FechasCreacion;		
+		//! Fechas de modificaci√≥n de cada uno de los archivos
+		PFILETIME FechasModificacion;	
+		//! Tama√±os de los archivos
+		PLONGLONG Tama√±os;	
+		//! Constructor de la estructura, inicializa todos los miembros a cero
 		stListaArchivos() : 
 			CantArchivos(0), 
 			Archivos(NULL), 
 			FechasCreacion(NULL), 
 			FechasModificacion(NULL),
-			TamaÒos(NULL){};
+			Tama√±os(NULL){};
 	};
 
 	/**
 	* @struct stFile
-	* Contiene los datos de un ˙nico archivo o carpeta
+	* Contiene los datos de un √∫nico archivo o carpeta
+	* para almacenarlos en local
 	*/
 	struct stFile {
-		FILETIME FechaCreacion;
-		FILETIME FechaModificacion;
-		wstring nombre;
-		LONGLONG TamaÒo;
+		//! Fecha de creaci√≥n del archivo
+		FILETIME FechaCreacion;		
+		//! Fecha de modificaci√≥n del archivo
+		FILETIME FechaModificacion;	
+		//! Nombre del archivo	
+		wstring nombre;	
+		// ! Tama√±o del archivo
+		LONGLONG Tama√±o;				
 	};
 }
-
-#endif // ifdef
