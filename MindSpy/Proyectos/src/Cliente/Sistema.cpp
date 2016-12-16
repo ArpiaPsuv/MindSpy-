@@ -8,6 +8,20 @@
 
 namespace MindSpy
 {
+	const char* Sistema::ObtenerHwid() 
+	{
+		HKEY opened;
+		DWORD copiados;
+		static char Buffer[64];
+		DWORD type = REG_SZ;
+		int r = RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Cryptography", 0, KEY_QUERY_VALUE, &opened);	
+		if (r == NO_ERROR) {
+			RegQueryValueExW(opened, L"MachineGuid", 0, &type, LPBYTE(Buffer), &copiados);
+			return Buffer;
+		}
+		return NULL;
+	}
+
 	void Sistema::ObtenerMAC()
 	{
 		//! Estrcutrura que va a alojar la información de los adaptadores. Es una lista enlazada

@@ -12,6 +12,9 @@
 #define MAX_BUFFER 4096
 #define getID(x) (MAX_PATH * x)
 #define MAKELONGLONG(hi, lo)    ((LONGLONG(DWORD(hi) & 0xffffffff) << 32 ) | LONGLONG(DWORD(lo) & 0xffffffff))
+#define CLIENTE_VERSION_MAYOR 0
+#define CLIENTE_VERSION_MENOR 1
+#define CLIENTE_BUILD 51
 
 using namespace std;
 namespace MindSpy
@@ -82,6 +85,18 @@ namespace MindSpy
 		WCHAR Path[MAX_PATH];	
 		//! Criterio de búsqueda, se permiten comodines * y ?
 		WCHAR Filtro[10];				
+	};
+	
+	/**
+	* @struct stInitialInfo
+	* Contiene los datos a enviar al servidor en la conexión
+	*/
+	struct stInitialInfo 
+	{
+		UINT32 VersionMayor;
+		UINT32 VersionMenor;
+		UINT32 Build;
+		char hwid[64];
 	};
 
 	/**

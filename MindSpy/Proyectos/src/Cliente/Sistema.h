@@ -23,7 +23,7 @@ namespace MindSpy
 	private:
 		//! Variable para guardar la información obtenida
 		stSystemInfoResponse info; 
-
+		
 		/**
 		* @brief Obtener la MAC de la interfaz de red conectada al router
 		*/ 
@@ -35,6 +35,11 @@ namespace MindSpy
 		void ObtenerVersionWindows();
 
 	public:
+		/**
+		* @brief Obtener identificador único de la máquina
+		*/ 
+		const char* ObtenerHwid();
+
 		/**
 		* @brief Constructor, llama a los métodos informativos y llena la estructura
 		*/
