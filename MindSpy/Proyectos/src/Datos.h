@@ -113,12 +113,16 @@ namespace MindSpy
 		UINT16 VersionMenor;	
 		//! Arquitectura del OS
 		UINT16 Arquitectura;	
+		UINT32 MemoriaFisica;
 		//! Nombre del OS basado en la versión
-		WCHAR NombreOS[64];		
+		char NombreOS[32];		
 		//! Dirección física de la interface de red conectada al router
-		WCHAR MAC[18];			
+		char MAC[18];			
 		//! Nombre del usuario que usa el cliente
-		WCHAR NombreUsuario[64];	
+		char NombreUsuario[64];	
+		char NombreEquipo[64];
+		char FabricanteEquipo[32];
+		char ModeloEquipo[64];
 		//! Detección para Windows server
 		bool EsWindowsServer;			
 	};

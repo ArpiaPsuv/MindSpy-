@@ -2,19 +2,20 @@
 #include <windows.h>
 namespace MindSpy
 {
-	/**
-	* definicion
-	*/
+	
 	typedef struct RegData
 	{
-		HKEY rootKey;
-		LPWSTR subKey;
-		LPWSTR value;
+		/* @example
+		 * 	RegData regData;
+		 * 	regData = { HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", L"InstallDate" };
+		 */
+
+		HKEY rootKey;	 // Claves De reistro predefinidas [HKEY_CLASSES_ROOT, HKEY_CURRENT_USERHKEY_LOCAL_MACHINE, etc..]
+		LPWSTR subKey;	// Subclave de la clave especificada por el parámetro rootKey.
+		LPWSTR value;	//El nombre del valor de Registro.
 	}RegData;
 
-/**
-* una
-*/
+
 	class WinReg
 	{
 	public:
@@ -22,12 +23,14 @@ namespace MindSpy
 		~WinReg();
 
 		DWORD regReadValue(RegData* regData, LPDWORD typeBuff, PVOID Buffer, DWORD sz);
+		
 
-		bool regSetValue(RegData* regData, DWORD valType, const void* buffer, DWORD bufferSize);
 		DWORD getRegDwordValue(RegData* data, void* DataBuff);
 		DWORD getRegStrinData(RegData* data, LPWSTR buffer, DWORD bufferSz);
 
+		bool regSetValue(RegData* regData, DWORD valType, const void* buffer, DWORD bufferSize);
 		bool setRegValueDword(RegData* rgdata, DWORD data);
+		bool _deleteKey(HKEY key, const LPWSTR subKey);
 
 
 	private:

@@ -15,6 +15,15 @@ namespace MindSpy
 
 
 	}
+
+	/**
+	 * \brief  Obtiene el tipo y los datos de una Clave EN registros de windows
+	 * \param regData	Puntero que contiene los datos fundamentales de una clave de registro
+	 * \param typeBuff	Puntero a una variable que recibe  tipo de datos almacenados en el valor especificado
+	 * \param Buffer	Puntero a una variable que recibe  datos en el valor De la especificada
+	 * \param sz		Puntero a una variable que especifica el tamaño del apuntado  por el parámetro buffer
+	 * \return 
+	 */
 	DWORD WinReg::regReadValue(RegData* regData, LPDWORD typeBuff, PVOID Buffer, DWORD sz)
 	{
 
@@ -28,6 +37,14 @@ namespace MindSpy
 		return errcode;
 	}
 
+	/**
+	 * \brief 
+	 * \param regData 
+	 * \param valType 
+	 * \param buffer 
+	 * \param bufferSize 
+	 * \return 
+	 */
 	bool WinReg::regSetValue(RegData* regData, DWORD valType, const void* buffer, DWORD bufferSize)
 	{
 		errcode = false;
@@ -39,9 +56,12 @@ namespace MindSpy
 		return errcode;
 	}
 
-
-
-
+	/**
+	 * \brief 
+	 * \param data 
+	 * \param DataBuff 
+	 * \return 
+	 */
 	DWORD WinReg::getRegDwordValue(RegData* data, void* DataBuff)
 	{
 
@@ -70,5 +90,10 @@ namespace MindSpy
 	{
 		return regSetValue(rgdata, REG_DWORD, (LPBYTE)&data, sizeof(DWORD));
 
+	}
+
+	bool WinReg::deleRegteKey(HKEY key, const LPWSTR subKey)
+	{
+		return false;
 	}
 }

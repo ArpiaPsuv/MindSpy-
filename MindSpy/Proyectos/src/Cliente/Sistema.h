@@ -34,6 +34,8 @@ namespace MindSpy
 		*/
 		void ObtenerVersionWindows();
 
+		void ObtenerDatosEquipo();
+
 	public:
 		/**
 		* @brief Obtener identificador único de la máquina
