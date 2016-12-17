@@ -14,9 +14,10 @@ namespace MindSpy
 		DWORD copiados;
 		static char Buffer[64];
 		DWORD type = REG_SZ;
-		int r = RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Cryptography", 0, KEY_QUERY_VALUE, &opened);	
+		int r = RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Cryptography", 0, KEY_QUERY_VALUE, &opened);	
 		if (r == NO_ERROR) {
-			RegQueryValueExW(opened, L"MachineGuid", 0, &type, LPBYTE(Buffer), &copiados);
+			RegQueryValueExA(opened, "MachineGuid", 0, &type, (LPBYTE)Buffer, &copiados);
+			RegCloseKey(opened);
 			return Buffer;
 		}
 		return NULL;
@@ -29,7 +30,7 @@ namespace MindSpy
 		//! Tamaño de la estructura
 		DWORD dwBufLen = sizeof(AdapterInfo);
 		//! Variable para guardar la MAC
-		static wchar_t mac_addr[18];
+		static char mac_addr[18];
 		// Reservar memoria preliminar para la estructura
 		AdapterInfo = (IP_ADAPTER_INFO *)malloc(dwBufLen);
 		// Inicializar la estructura. Si falla, es poque el tamaño es incorrecto
@@ -52,13 +53,13 @@ namespace MindSpy
 					strcmp(AdapterInfo->GatewayList.IpAddress.String, "0.0.0.0"))
 				{
 					// De serlo, se le da formato a la MAC y se copia a la variable
-					wsprintf(mac_addr, L"%02X:%02X:%02X:%02X:%02X:%02X",
+					sprintf(mac_addr, "%02X:%02X:%02X:%02X:%02X:%02X",
 						AdapterInfo->Address[0], AdapterInfo->Address[1],
 						AdapterInfo->Address[2], AdapterInfo->Address[3],
 						AdapterInfo->Address[4], AdapterInfo->Address[5]);
 
 					// Se copian esos cambios a la estructura y se termina el ciclo
-					wcsncpy(info.MAC, mac_addr, 18);
+					strncpy(info.MAC, mac_addr, 18);
 					break;
 				}
 				// Sino, se mueve el puntero a la estructura siguiente
@@ -109,37 +110,37 @@ namespace MindSpy
 		switch (info.VersionMayor)
 		{
 		case 10:
-			wcsncpy(info.NombreOS, L"Windows 10", 64);
+			strncpy(info.NombreOS, "Windows 10", 64);
 			break;
 		case 6:
 			switch (info.VersionMenor)
 			{
 			case 3:
-				wcsncpy(info.NombreOS, L"Windows 8.1", 64);
+				strncpy(info.NombreOS, "Windows 8.1", 64);
 				break;
 
 			case 2:
 				if (oviex.wProductType == VER_NT_WORKSTATION)
-					wcsncpy(info.NombreOS, L"Windows 8", 64);
+					strncpy(info.NombreOS, "Windows 8", 64);
 				else {
-					wcsncpy(info.NombreOS, L"Windows Server 2012", 64);
+					strncpy(info.NombreOS, "Windows Server 2012", 64);
 					info.EsWindowsServer = true;
 				}
 				break;
 			case 1:
 				if (oviex.wProductType == VER_NT_WORKSTATION)
-					wcsncpy(info.NombreOS, L"Windows 7", 64);
+					strncpy(info.NombreOS, "Windows 7", 64);
 				else {
-					wcsncpy(info.NombreOS, L"Windows Server 2008 R2", 64);
+					strncpy(info.NombreOS, "Windows Server 2008 R2", 64);
 					info.EsWindowsServer = true;
 				}
 				break;
 
 			case 0:
 				if (oviex.wProductType == VER_NT_WORKSTATION)
-					wcsncpy(info.NombreOS, L"Windows Vista", 64);
+					strncpy(info.NombreOS, "Windows Vista", 64);
 				else {
-					wcsncpy(info.NombreOS, L"Windows Server 2008", 64);
+					strncpy(info.NombreOS, "Windows Server 2008", 64);
 					info.EsWindowsServer = true;
 				}
 				break;
@@ -151,12 +152,12 @@ namespace MindSpy
 			{
 			case 2:
 				if (oviex.wSuiteMask == VER_SUITE_WH_SERVER) {
-					wcsncpy(info.NombreOS, L"Windows Home Server", 64);
+					strncpy(info.NombreOS, "Windows Home Server", 64);
 					info.EsWindowsServer = true;
 				} else if (oviex.wProductType == VER_NT_WORKSTATION) {
-					wcsncpy(info.NombreOS, L"Windows XP Professional, x64 Edition", 64);
+					strncpy(info.NombreOS, "Windows XP Professional, x64 Edition", 64);
 				} else {
-					wcsncpy(info.NombreOS, L"Windows Server 2003", 64);
+					strncpy(info.NombreOS, "Windows Server 2003", 64);
 					info.EsWindowsServer = true;
 				}
 				break;
@@ -165,15 +166,15 @@ namespace MindSpy
 				switch (oviex.wServicePackMajor)
 				{
 				case 3:
-					wcsncpy(info.NombreOS, L"Windows XP SP3", 64);
+					strncpy(info.NombreOS, "Windows XP SP3", 64);
 					break;
 
 				case 2:
-					wcsncpy(info.NombreOS, L"Windows XP SP2", 64);
+					strncpy(info.NombreOS, "Windows XP SP2", 64);
 					break;
 
 				case 1:
-					wcsncpy(info.NombreOS, L"Windows XP SP1", 64);
+					strncpy(info.NombreOS, "Windows XP SP1", 64);
 					break;
 				}
 				break;
@@ -181,12 +182,34 @@ namespace MindSpy
 		}
 	}
 
+	void Sistema::ObtenerDatosEquipo() 
+	{
+		DWORD tam = 64;
+		GetComputerNameA(info.NombreEquipo, &tam);
+
+		HKEY opened;
+		DWORD copiados;
+		static char Buffer[64];
+
+		DWORD type = REG_SZ;
+		int r = RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\SystemInformation", 0, KEY_QUERY_VALUE, &opened);	
+		if (r == NO_ERROR) {
+			RegQueryValueExA(opened, "SystemManufacturer", 0, &type, (LPBYTE)info.FabricanteEquipo, &copiados);
+			RegQueryValueExA(opened, "SystemProductName", 0, &type, (LPBYTE)info.ModeloEquipo, &copiados);
+			RegCloseKey(opened);
+		}
+		unsigned long long memoria;
+		GetPhysicallyInstalledSystemMemory(&memoria);
+		info.MemoriaFisica = (memoria / 1024);
+
+	}
+
 	Sistema::Sistema()
 	{
 		// Se inicializan todos los datos de la estructura
 		//! Almacenará el nombre del usuario actual
 		DWORD bufflen = 64;
-		GetUserNameW(info.NombreUsuario, &bufflen);
+		GetUserNameA(info.NombreUsuario, &bufflen);
 		ObtenerMAC();
 		ObtenerVersionWindows();
 	}
