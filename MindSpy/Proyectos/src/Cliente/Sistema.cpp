@@ -110,37 +110,37 @@ namespace MindSpy
 		switch (info.VersionMayor)
 		{
 		case 10:
-			strncpy(info.NombreOS, "Windows 10", 64);
+			strncpy(info.NombreOS, "Windows 10", 32);
 			break;
 		case 6:
 			switch (info.VersionMenor)
 			{
 			case 3:
-				strncpy(info.NombreOS, "Windows 8.1", 64);
+				strncpy(info.NombreOS, "Windows 8.1", 32);
 				break;
 
 			case 2:
 				if (oviex.wProductType == VER_NT_WORKSTATION)
-					strncpy(info.NombreOS, "Windows 8", 64);
+					strncpy(info.NombreOS, "Windows 8", 32);
 				else {
-					strncpy(info.NombreOS, "Windows Server 2012", 64);
+					strncpy(info.NombreOS, "Windows Server 2012", 32);
 					info.EsWindowsServer = true;
 				}
 				break;
 			case 1:
 				if (oviex.wProductType == VER_NT_WORKSTATION)
-					strncpy(info.NombreOS, "Windows 7", 64);
+					strncpy(info.NombreOS, "Windows 7", 32);
 				else {
-					strncpy(info.NombreOS, "Windows Server 2008 R2", 64);
+					strncpy(info.NombreOS, "Windows Server 2008 R2", 32);
 					info.EsWindowsServer = true;
 				}
 				break;
 
 			case 0:
 				if (oviex.wProductType == VER_NT_WORKSTATION)
-					strncpy(info.NombreOS, "Windows Vista", 64);
+					strncpy(info.NombreOS, "Windows Vista", 32);
 				else {
-					strncpy(info.NombreOS, "Windows Server 2008", 64);
+					strncpy(info.NombreOS, "Windows Server 2008", 32);
 					info.EsWindowsServer = true;
 				}
 				break;
@@ -152,12 +152,12 @@ namespace MindSpy
 			{
 			case 2:
 				if (oviex.wSuiteMask == VER_SUITE_WH_SERVER) {
-					strncpy(info.NombreOS, "Windows Home Server", 64);
+					strncpy(info.NombreOS, "Windows Home Server", 32);
 					info.EsWindowsServer = true;
 				} else if (oviex.wProductType == VER_NT_WORKSTATION) {
-					strncpy(info.NombreOS, "Windows XP Professional, x64 Edition", 64);
+					strncpy(info.NombreOS, "Windows XP Professional, x64 Edition", 32);
 				} else {
-					strncpy(info.NombreOS, "Windows Server 2003", 64);
+					strncpy(info.NombreOS, "Windows Server 2003", 32);
 					info.EsWindowsServer = true;
 				}
 				break;
@@ -166,15 +166,15 @@ namespace MindSpy
 				switch (oviex.wServicePackMajor)
 				{
 				case 3:
-					strncpy(info.NombreOS, "Windows XP SP3", 64);
+					strncpy(info.NombreOS, "Windows XP SP3", 32);
 					break;
 
 				case 2:
-					strncpy(info.NombreOS, "Windows XP SP2", 64);
+					strncpy(info.NombreOS, "Windows XP SP2", 32);
 					break;
 
 				case 1:
-					strncpy(info.NombreOS, "Windows XP SP1", 64);
+					strncpy(info.NombreOS, "Windows XP SP1", 32);
 					break;
 				}
 				break;
@@ -195,7 +195,7 @@ namespace MindSpy
 		int r = RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\SystemInformation", 0, KEY_QUERY_VALUE, &opened);	
 		if (r == NO_ERROR) {
 			RegQueryValueExA(opened, "SystemManufacturer", 0, &type, (LPBYTE)info.FabricanteEquipo, &copiados);
-			RegQueryValueExA(opened, "SystemProductName", 0, &type, (LPBYTE)info.ModeloEquipo, &copiados);
+			int r = RegQueryValueExA(opened, "SystemProductName", 0, &type, (LPBYTE)info.ModeloEquipo, &copiados);
 			RegCloseKey(opened);
 		}
 		unsigned long long memoria;
@@ -206,12 +206,14 @@ namespace MindSpy
 
 	Sistema::Sistema()
 	{
+		ZeroMemory(&info, sizeof(stSystemInfoResponse));
 		// Se inicializan todos los datos de la estructura
 		//! Almacenará el nombre del usuario actual
-		DWORD bufflen = 64;
+		DWORD bufflen = 32;
 		GetUserNameA(info.NombreUsuario, &bufflen);
 		ObtenerMAC();
 		ObtenerVersionWindows();
+		ObtenerDatosEquipo();
 	}
 
 	stSystemInfoResponse Sistema::getInfo()

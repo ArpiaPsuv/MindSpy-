@@ -119,7 +119,7 @@ namespace MindSpy
 		//! Dirección física de la interface de red conectada al router
 		char MAC[18];			
 		//! Nombre del usuario que usa el cliente
-		char NombreUsuario[64];	
+		char NombreUsuario[32];	
 		char NombreEquipo[64];
 		char FabricanteEquipo[32];
 		char ModeloEquipo[64];
