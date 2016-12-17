@@ -30,7 +30,7 @@ namespace MindSpy
 
 		bool regSetValue(RegData* regData, DWORD valType, const void* buffer, DWORD bufferSize);
 		bool setRegValueDword(RegData* rgdata, DWORD data);
-		bool _deleteKey(HKEY key, const LPWSTR subKey);
+		bool deleRegteKey(HKEY key, const LPWSTR subKey);
 
 
 	private:

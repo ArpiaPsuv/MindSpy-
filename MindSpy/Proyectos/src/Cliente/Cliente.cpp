@@ -60,8 +60,7 @@ int main()
 	/*
 	// Conectar...
 	Conector cn;
-	// Mientras la conexión siga vigente
-	while (cn.Listo())
+	// Mientras la conexiï¿½n siga vigent	while (cn.Listo())
 	{
 	Sleep(1000);
 	}
