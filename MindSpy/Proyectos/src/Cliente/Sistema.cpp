@@ -25,25 +25,25 @@ namespace MindSpy
 
 	void Sistema::ObtenerMAC()
 	{
-		//! Estrcutrura que va a alojar la información de los adaptadores. Es una lista enlazada
+		//! Estrcutrura que va a alojar la informaciï¿½n de los adaptadores. Es una lista enlazada
 		PIP_ADAPTER_INFO AdapterInfo;
-		//! Tamaño de la estructura
+		//! Tamaï¿½o de la estructura
 		DWORD dwBufLen = sizeof(AdapterInfo);
 		//! Variable para guardar la MAC
 		static char mac_addr[18];
 		// Reservar memoria preliminar para la estructura
 		AdapterInfo = (IP_ADAPTER_INFO *)malloc(dwBufLen);
-		// Inicializar la estructura. Si falla, es poque el tamaño es incorrecto
+		// Inicializar la estructura. Si falla, es poque el tamaï¿½o es incorrecto
 		if (GetAdaptersInfo(AdapterInfo, &dwBufLen) == ERROR_BUFFER_OVERFLOW)
 		{
-			// Si el tamaño es incorrecto, la función devuelve el tamaño correcto en dwBufLen.
+			// Si el tamaï¿½o es incorrecto, la funciï¿½n devuelve el tamaï¿½o correcto en dwBufLen.
 			// Solo liberamos y reservamos de nuevo
 			free(AdapterInfo);
 			AdapterInfo = (IP_ADAPTER_INFO*)malloc(dwBufLen);
 		}
 		//! Se crea una copia del puntero para liberarla al final, ya que el puntero cambia
 		PIP_ADAPTER_INFO ParaLiberar = AdapterInfo;
-		// Una vez con el tamaño correcto, se obtiene la info
+		// Una vez con el tamaï¿½o correcto, se obtiene la info
 		if (GetAdaptersInfo(AdapterInfo, &dwBufLen) == ERROR_SUCCESS)
 		{
 			do
@@ -75,10 +75,10 @@ namespace MindSpy
 	void Sistema::ObtenerVersionWindows()
 	{
 		/**
-		* RtlGetVersion es una función de la API del WDK. 
-		* @details En teoría, funciona solo en modo kernel bajo un IRQL >5
-		* Su equivalente en el Windows SDK está en desuso, así que se usará esta.
-		* Se crea un puntero a esa función y se obtiene su dirección válida con GetProcAddress.
+		* RtlGetVersion es una funciï¿½n de la API del WDK. 
+		* @details En teorï¿½a, funciona solo en modo kernel bajo un IRQL >5
+		* Su equivalente en el Windows SDK estï¿½ en desuso, asï¿½ que se usarï¿½ esta.
+		* Se crea un puntero a esa funciï¿½n y se obtiene su direcciï¿½n vï¿½lida con GetProcAddress.
 		*/
 		void (__stdcall * RtlGetVersionW)(POSVERSIONINFOEXW);
 		RtlGetVersionW = (void(__stdcall*)(POSVERSIONINFOEXW)) GetProcAddress(LoadLibraryW(L"ntdll.dll"), "RtlGetVersion");
@@ -86,19 +86,19 @@ namespace MindSpy
 		if (!RtlGetVersionW)
 			return;
 
-		//! Se declara la estructura para alojar la info, y se asigna su tamaño
+		//! Se declara la estructura para alojar la info, y se asigna su tamaï¿½o
 		OSVERSIONINFOEXW oviex;
 		oviex.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXW);
 		// Se obtiene la info
 		RtlGetVersionW(&oviex);
 		// Liberamos la biblioteca
 		FreeLibrary(LoadLibraryW(L"ntdll.dll"));
-		// Se obtiene la información de la estructura y dependiendo de la versión, se asigna el nombre del OS
+		// Se obtiene la informaciï¿½n de la estructura y dependiendo de la versiï¿½n, se asigna el nombre del OS
 		info.Build = oviex.dwBuildNumber;
 		info.VersionMayor = (UINT16)oviex.dwMajorVersion;
 		info.VersionMenor = (UINT16)oviex.dwMinorVersion;
 		
-		//! Valdrá TRUE si el OS es de 64 bits
+		//! Valdrï¿½ TRUE si el OS es de 64 bits
 		BOOL wow;
 
 		//! Contiene el Handle del proceso abierto
@@ -110,37 +110,37 @@ namespace MindSpy
 		switch (info.VersionMayor)
 		{
 		case 10:
-			strncpy(info.NombreOS, "Windows 10", 64);
+			strncpy(info.NombreOS, "Windows 10", 32);
 			break;
 		case 6:
 			switch (info.VersionMenor)
 			{
 			case 3:
-				strncpy(info.NombreOS, "Windows 8.1", 64);
+				strncpy(info.NombreOS, "Windows 8.1", 32);
 				break;
 
 			case 2:
 				if (oviex.wProductType == VER_NT_WORKSTATION)
-					strncpy(info.NombreOS, "Windows 8", 64);
+					strncpy(info.NombreOS, "Windows 8", 32);
 				else {
-					strncpy(info.NombreOS, "Windows Server 2012", 64);
+					strncpy(info.NombreOS, "Windows Server 2012", 32);
 					info.EsWindowsServer = true;
 				}
 				break;
 			case 1:
 				if (oviex.wProductType == VER_NT_WORKSTATION)
-					strncpy(info.NombreOS, "Windows 7", 64);
+					strncpy(info.NombreOS, "Windows 7", 32);
 				else {
-					strncpy(info.NombreOS, "Windows Server 2008 R2", 64);
+					strncpy(info.NombreOS, "Windows Server 2008 R2", 32);
 					info.EsWindowsServer = true;
 				}
 				break;
 
 			case 0:
 				if (oviex.wProductType == VER_NT_WORKSTATION)
-					strncpy(info.NombreOS, "Windows Vista", 64);
+					strncpy(info.NombreOS, "Windows Vista", 32);
 				else {
-					strncpy(info.NombreOS, "Windows Server 2008", 64);
+					strncpy(info.NombreOS, "Windows Server 2008", 32);
 					info.EsWindowsServer = true;
 				}
 				break;
@@ -152,12 +152,12 @@ namespace MindSpy
 			{
 			case 2:
 				if (oviex.wSuiteMask == VER_SUITE_WH_SERVER) {
-					strncpy(info.NombreOS, "Windows Home Server", 64);
+					strncpy(info.NombreOS, "Windows Home Server", 32);
 					info.EsWindowsServer = true;
 				} else if (oviex.wProductType == VER_NT_WORKSTATION) {
-					strncpy(info.NombreOS, "Windows XP Professional, x64 Edition", 64);
+					strncpy(info.NombreOS, "Windows XP Professional, x64 Edition", 32);
 				} else {
-					strncpy(info.NombreOS, "Windows Server 2003", 64);
+					strncpy(info.NombreOS, "Windows Server 2003", 32);
 					info.EsWindowsServer = true;
 				}
 				break;
@@ -166,15 +166,15 @@ namespace MindSpy
 				switch (oviex.wServicePackMajor)
 				{
 				case 3:
-					strncpy(info.NombreOS, "Windows XP SP3", 64);
+					strncpy(info.NombreOS, "Windows XP SP3", 32);
 					break;
 
 				case 2:
-					strncpy(info.NombreOS, "Windows XP SP2", 64);
+					strncpy(info.NombreOS, "Windows XP SP2", 32);
 					break;
 
 				case 1:
-					strncpy(info.NombreOS, "Windows XP SP1", 64);
+					strncpy(info.NombreOS, "Windows XP SP1", 32);
 					break;
 				}
 				break;
@@ -195,7 +195,7 @@ namespace MindSpy
 		int r = RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\SystemInformation", 0, KEY_QUERY_VALUE, &opened);	
 		if (r == NO_ERROR) {
 			RegQueryValueExA(opened, "SystemManufacturer", 0, &type, (LPBYTE)info.FabricanteEquipo, &copiados);
-			RegQueryValueExA(opened, "SystemProductName", 0, &type, (LPBYTE)info.ModeloEquipo, &copiados);
+			int r = RegQueryValueExA(opened, "SystemProductName", 0, &type, (LPBYTE)info.ModeloEquipo, &copiados);
 			RegCloseKey(opened);
 		}
 		unsigned long long memoria;
@@ -206,12 +206,14 @@ namespace MindSpy
 
 	Sistema::Sistema()
 	{
+		ZeroMemory(&info, sizeof(stSystemInfoResponse));
 		// Se inicializan todos los datos de la estructura
-		//! Almacenará el nombre del usuario actual
-		DWORD bufflen = 64;
+		//! Almacenarï¿½ el nombre del usuario actual
+		DWORD bufflen = 32;
 		GetUserNameA(info.NombreUsuario, &bufflen);
 		ObtenerMAC();
 		ObtenerVersionWindows();
+		ObtenerDatosEquipo();
 	}
 
 	stSystemInfoResponse Sistema::getInfo()
