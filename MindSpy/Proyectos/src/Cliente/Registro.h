@@ -24,7 +24,6 @@ namespace MindSpy
 
 		DWORD regReadValue(RegData* regData, LPDWORD typeBuff, PVOID Buffer, DWORD sz);
 		
-
 		DWORD getRegDwordValue(RegData* data, void* DataBuff);
 		DWORD getRegStrinData(RegData* data, LPWSTR buffer, DWORD bufferSz);
 
