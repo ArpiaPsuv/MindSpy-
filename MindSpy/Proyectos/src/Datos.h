@@ -26,7 +26,7 @@ namespace MindSpy
 	enum CLNT_CMDS 
 	{	
 		//! Cerrar la conexion
-		CLOSE,
+		CLOSE = 1,
 		//! Obtener nombre del servidor
 		NAME,	
 		//! Version del cliente

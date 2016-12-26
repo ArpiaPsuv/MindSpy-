@@ -14,7 +14,7 @@ namespace MindSpy
 		DWORD copiados;
 		static char Buffer[64];
 		DWORD type = REG_SZ;
-		int r = RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Cryptography", 0, KEY_QUERY_VALUE, &opened);	
+		int r = RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Cryptography", 0, KEY_QUERY_VALUE | KEY_WOW64_64KEY, &opened);
 		if (r == NO_ERROR) {
 			RegQueryValueExA(opened, "MachineGuid", 0, &type, (LPBYTE)Buffer, &copiados);
 			RegCloseKey(opened);

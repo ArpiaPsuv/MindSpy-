@@ -26,7 +26,7 @@ namespace MindSpy
 		if (TamañosTemp)free(TamañosTemp);
 		if (AtributosTemp)free(AtributosTemp);
 	}
-	
+
 	wstring FileSystem::getSystemDir(SystemFolder Dir)
 	{
 		//! Ruta temporal
@@ -90,10 +90,10 @@ namespace MindSpy
 		// En lugar de:
 		//	PathAddBackslashW(Ruta);
 		// nos evitamos incluir una lib entera solo para ella
-		if (Ruta[wcslen(Ruta)-1] != L'\\') {
+		if (Ruta[wcslen(Ruta) - 1] != L'\\') {
 			int r = wcslen(Ruta);
 			Ruta[r] = L'\\';
-			Ruta[r+1] = 0;
+			Ruta[r + 1] = 0;
 		}
 		wcscat(Ruta, Filter.c_str());
 		isFind = FindFirstFileW(Ruta, &FindData);
@@ -114,8 +114,8 @@ namespace MindSpy
 			if (type == ONLY_ARCHIVE && !(FindData.dwFileAttributes  & FILE_ATTRIBUTE_ARCHIVE))
 				continue;
 
-			wcscpy((wchar_t*)((char*)BuffTemp+Offset), FindData.cFileName);
-			Offset += wcslen(FindData.cFileName)*2 + 2;
+			wcscpy((wchar_t*)((char*)BuffTemp + Offset), FindData.cFileName);
+			Offset += wcslen(FindData.cFileName) * 2 + 2;
 			FechasCreacionTemp[items] = FindData.ftCreationTime;
 			FechasModificacionTemp[items] = FindData.ftLastWriteTime;
 			TamañosTemp[items] = MAKELONGLONG(FindData.nFileSizeHigh, FindData.nFileSizeLow);

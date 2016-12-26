@@ -87,11 +87,11 @@ namespace MindSpy
 
 	void Conector::Escuchar()
 	{
+		char *szBuff = (char*)malloc(1);
 		while (true)
 		{
-			char *szBuff = (char*)malloc(1);
-			DWORD bDisponibles;
-			int res = recv(sckt, (char*)&bDisponibles, 4, MSG_PEEK);
+			int Cmds[2];
+			int res = recv(sckt, (char*)&Cmds, 8, MSG_PEEK);
 			// si no los hay, ralentizamos y reiniciamos el ciclo
 			if (res <= 0)
 			{
@@ -99,29 +99,26 @@ namespace MindSpy
 				Conectado = false;
 				return;	
 			}
-			else if (!bDisponibles) 
+			else if (!Cmds[0] && !Cmds[1]) 
 			{
 				continue;
 			}
-			else 
-			{
-				szBuff = (char*)realloc(szBuff, bDisponibles);
-			}
-
+			
+			szBuff = (char*)realloc(szBuff, Cmds[0]+8);
 			char* actual = szBuff;
-			while (bDisponibles) {
-				res = recv(sckt, actual, bDisponibles, 0);
+			while (Cmds[0]+8) {
+				res = recv(sckt, actual, Cmds[0]+8, 0);
 				if (res <= 0)
 				{
 					closesocket(sckt);
 					Conectado = false;
 					return;	
 				}
-				bDisponibles -= res;
+				Cmds[0] -= res;
 				actual += res;
 			}
 
-			UINT32 comando = *(UINT32*)(szBuff + 4);
+			UINT32 comando = Cmds[1];
 			cout << comando << endl;
 			switch (comando)
 			{
