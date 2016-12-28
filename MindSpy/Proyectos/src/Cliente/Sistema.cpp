@@ -213,7 +213,7 @@ namespace MindSpy
 			BufferW, 64);
 
 		if (ok != NULL)
-			WideCharToMultiByte(CP_ACP, 0, BufferW, 64, info.ModeloEquipo, 10, NULL, NULL);
+			WideCharToMultiByte(CP_ACP, 0, BufferW, 64, info.ModeloEquipo, 64, NULL, NULL);
 
 
 		/*
