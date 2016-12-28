@@ -22,11 +22,11 @@ namespace MindSpy
 	{
 	private:
 		//! Variable para guardar la información obtenida
-		stSystemInfoResponse info; 
-		
+		stSystemInfoResponse info;
+
 		/**
 		* @brief Obtener la MAC de la interfaz de red conectada al router
-		*/ 
+		*/
 		void ObtenerMAC();
 
 		/**
@@ -39,7 +39,7 @@ namespace MindSpy
 	public:
 		/**
 		* @brief Obtener identificador único de la máquina
-		*/ 
+		*/
 		const char* ObtenerHwid();
 
 		/**
@@ -50,6 +50,6 @@ namespace MindSpy
 		/**
 		* @brief Devuelve la estructura con la información
 		*/
-		stSystemInfoResponse getInfo(); 
+		stSystemInfoResponse getInfo();
 	};
 }

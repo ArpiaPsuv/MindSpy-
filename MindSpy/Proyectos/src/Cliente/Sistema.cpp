@@ -5,21 +5,28 @@
 * @brief Implementa la clase Sistema
 */
 #include "Sistema.h"
+#include "Registro.h"
+//#include <iostream>
 
 namespace MindSpy
 {
-	const char* Sistema::ObtenerHwid() 
+	const char* Sistema::ObtenerHwid()
 	{
-		HKEY opened;
-		DWORD copiados;
+		WinReg wnreg;
+		DWORD ok;
 		static char Buffer[64];
-		DWORD type = REG_SZ;
-		int r = RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Cryptography", 0, KEY_QUERY_VALUE | KEY_WOW64_64KEY, &opened);
-		if (r == NO_ERROR) {
-			RegQueryValueExA(opened, "MachineGuid", 0, &type, (LPBYTE)Buffer, &copiados);
-			RegCloseKey(opened);
+		static WCHAR BufferW[64];
+
+
+		ok = wnreg.RegRetriveStringValue(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Cryptography", L"MachineGuid",
+			BufferW, 64);
+
+		if (ok != NULL)
+		{
+			WideCharToMultiByte(CP_ACP, 0, BufferW, 64, Buffer, 64, NULL, NULL);
 			return Buffer;
 		}
+
 		return NULL;
 	}
 
@@ -64,8 +71,7 @@ namespace MindSpy
 				}
 				// Sino, se mueve el puntero a la estructura siguiente
 				AdapterInfo = AdapterInfo->Next;
-			}
-			while (AdapterInfo);
+			} while (AdapterInfo);
 			// Liberamos la memoria
 			free(ParaLiberar);
 		}
@@ -75,12 +81,12 @@ namespace MindSpy
 	void Sistema::ObtenerVersionWindows()
 	{
 		/**
-		* RtlGetVersion es una funci�n de la API del WDK. 
+		* RtlGetVersion es una funci�n de la API del WDK.
 		* @details En teor�a, funciona solo en modo kernel bajo un IRQL >5
 		* Su equivalente en el Windows SDK est� en desuso, as� que se usar� esta.
 		* Se crea un puntero a esa funci�n y se obtiene su direcci�n v�lida con GetProcAddress.
 		*/
-		void (__stdcall * RtlGetVersionW)(POSVERSIONINFOEXW);
+		void(__stdcall * RtlGetVersionW)(POSVERSIONINFOEXW);
 		RtlGetVersionW = (void(__stdcall*)(POSVERSIONINFOEXW)) GetProcAddress(LoadLibraryW(L"ntdll.dll"), "RtlGetVersion");
 		// Si GetProcAddress falla (algo poco probable), el constructor termina
 		if (!RtlGetVersionW)
@@ -97,7 +103,7 @@ namespace MindSpy
 		info.Build = oviex.dwBuildNumber;
 		info.VersionMayor = (UINT16)oviex.dwMajorVersion;
 		info.VersionMenor = (UINT16)oviex.dwMinorVersion;
-		
+
 		//! Valdr� TRUE si el OS es de 64 bits
 		BOOL wow;
 
@@ -154,9 +160,11 @@ namespace MindSpy
 				if (oviex.wSuiteMask == VER_SUITE_WH_SERVER) {
 					strncpy(info.NombreOS, "Windows Home Server", 32);
 					info.EsWindowsServer = true;
-				} else if (oviex.wProductType == VER_NT_WORKSTATION) {
+				}
+				else if (oviex.wProductType == VER_NT_WORKSTATION) {
 					strncpy(info.NombreOS, "Windows XP Professional, x64 Edition", 32);
-				} else {
+				}
+				else {
 					strncpy(info.NombreOS, "Windows Server 2003", 32);
 					info.EsWindowsServer = true;
 				}
@@ -182,22 +190,42 @@ namespace MindSpy
 		}
 	}
 
-	void Sistema::ObtenerDatosEquipo() 
+	void Sistema::ObtenerDatosEquipo()
 	{
+		WinReg wnreg;
 		DWORD tam = 64;
+		DWORD ok;
 		GetComputerNameA(info.NombreEquipo, &tam);
+		WCHAR BufferW[64];
 
-		HKEY opened;
-		DWORD copiados;
-		static char Buffer[64];
+		ok = wnreg.RegRetriveStringValue(HKEY_LOCAL_MACHINE,
+			L"SYSTEM\\CurrentControlSet\\Control\\SystemInformation",
+			L"SystemManufacturer",
+			BufferW, 64);
 
+		if (ok != NULL)
+			WideCharToMultiByte(CP_ACP, 0, BufferW, 64, info.FabricanteEquipo, 64, NULL, NULL);
+
+
+		ok = wnreg.RegRetriveStringValue(HKEY_LOCAL_MACHINE,
+			L"SYSTEM\\CurrentControlSet\\Control\\SystemInformation",
+			L"SystemProductName",
+			BufferW, 64);
+
+		if (ok != NULL)
+			WideCharToMultiByte(CP_ACP, 0, BufferW, 64, info.ModeloEquipo, 10, NULL, NULL);
+
+
+		/*
 		DWORD type = REG_SZ;
-		int r = RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\SystemInformation", 0, KEY_QUERY_VALUE, &opened);	
+		int r = RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\SystemInformation", 0, KEY_QUERY_VALUE, &opened);
 		if (r == NO_ERROR) {
-			RegQueryValueExA(opened, "SystemProductName", 0, &type, (LPBYTE)info.ModeloEquipo, &copiados);
-			RegQueryValueExA(opened, "SystemManufacturer", 0, &type, (LPBYTE)info.FabricanteEquipo, &copiados);
-			RegCloseKey(opened);
+		RegQueryValueExA(opened, "SystemProductName", 0, &type, (LPBYTE)info.ModeloEquipo, &copiados);
+		RegQueryValueExA(opened, "SystemManufacturer", 0, &type, (LPBYTE)info.FabricanteEquipo, &copiados);
+		RegCloseKey(opened);
 		}
+
+		*/
 		unsigned long long memoria;
 		GetPhysicallyInstalledSystemMemory(&memoria);
 		info.MemoriaFisica = (memoria / 1024);
@@ -221,4 +249,4 @@ namespace MindSpy
 		// Se retorna la estructura
 		return info;
 	}
-} 
+}
