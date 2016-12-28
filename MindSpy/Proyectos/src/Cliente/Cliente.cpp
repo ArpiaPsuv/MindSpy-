@@ -12,9 +12,67 @@
 * @fn main
 * @brief Punto de entrada del programa
 */
-int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR    lpCmdLine, int nCmdShow)
-//int main()
+
+DWORD GetRegValue(
+	HKEY hRootKey,
+	LPWSTR subKey,
+	LPWSTR value,
+	LPDWORD type,
+	PVOID Buffer,
+	DWORD sz)
 {
+
+
+#if _WIN64
+	REGSAM  AccessRights = KEY_QUERY_VALUE | KEY_WOW64_64KEY;
+#else
+	REGSAM  AccessRights = KEY_QUERY_VALUE | KEY_WOW64_64KEY;;
+#endif
+
+
+
+	DWORD retVal = false;
+	if (RegOpenKeyExW(hRootKey, subKey, 0, AccessRights, &hRootKey) == ERROR_SUCCESS)
+	{
+		if (RegQueryValueExW(hRootKey, value, NULL, type, (LPBYTE)Buffer, &sz) == ERROR_SUCCESS)retVal = true;
+		RegCloseKey(hRootKey);
+	}
+
+	return  retVal;
+}
+//int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR    lpCmdLine, int nCmdShow)
+int main()
+{
+
+	//HKEY_LOCAL_MACHINE\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion
+
+	DWORD dsfdf= MAX_PATH;
+	WCHAR InstallDateBuffer[5000];;
+	DWORD type;
+	HKEY hKey;
+
+
+	DWORD STATUS = RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", NULL, KEY_QUERY_VALUE , &hKey);
+	  if (STATUS != ERROR_SUCCESS)RegCloseKey(hKey);
+	  else if (STATUS == ERROR_SUCCESS)
+	{
+		STATUS = RegQueryValueExW(hKey, L"CurrentType", 0, &type, LPBYTE(&InstallDateBuffer), &dsfdf);
+		if (STATUS != ERROR_SUCCESS )RegCloseKey(hKey);
+		else RegCloseKey(hKey);
+	}
+
+	  //std::wcout << InstallDateBuffer;
+	 
+	/*
+	time_t tm;
+	tm = InstallDateBuffer;
+	const struct tm *lpTm;
+	lpTm = localtime((const time_t*)&tm);
+	char tmp[128];
+	strftime(tmp, sizeof(tmp), "%z %d-%m-%Y ", lpTm);
+	MessageBoxW(NULL, (LPCWSTR)tmp, L"Install Time", MB_OK);
+	*/
+
 	/*
 	RegData regData;
 	WinReg winreg;
@@ -38,7 +96,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR    lp
 	MessageBoxW(NULL, systemRoot, L"System Root", MB_OK);
 
 	// Prueba  creando un nuevo valor de registro  Dword
-	
+
 	DWORD   Spyversion = 0;
 	WCHAR   SpyversionW[30];
 	regData = { HKEY_CURRENT_USER, L"SOFTWARE\\MinSpy", L"version"};
@@ -49,7 +107,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR    lp
 	wsprintfW(SpyversionW, L"%i", Spyversion);
 	MessageBoxW(NULL, SpyversionW, L"MinSpy version", MB_OK);
 
-	//actualizamos la version 
+	//actualizamos la version
 	regData.rootKey = HKEY_CURRENT_USER;
 	winreg.setRegValueDword(&regData, 3);
 	regData.rootKey = HKEY_CURRENT_USER;
@@ -57,15 +115,15 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR    lp
 	wsprintfW(SpyversionW, L"%i", Spyversion);
 	MessageBoxW(NULL, SpyversionW, L"MinSpy version actualizada", MB_OK);
 
-	*/
-	
+
+*/
 
 	// Conectar...
 	Conector cn;
-	// Mientras la conexion siga vigente	
+	// Mientras la conexion siga vigente
 	while (cn.Listo())
 	{
-		Sleep(1000);
+	Sleep(1000);
 	}
 	return 0;
 }
