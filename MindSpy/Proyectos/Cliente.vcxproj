@@ -126,6 +126,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="SoftwareGrabbed.cpp" />
     <ClCompile Include="src\Cliente\Cliente.cpp" />
     <ClCompile Include="src\Cliente\Conector.cpp" />
     <ClCompile Include="src\Cliente\FileSystem.cpp" />
@@ -133,6 +134,7 @@
     <ClCompile Include="src\Cliente\Sistema.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="SoftwareGrabbed.h" />
     <ClInclude Include="src\Cliente\Cliente.h" />
     <ClInclude Include="src\Cliente\Conector.h" />
     <ClInclude Include="src\Cliente\FileSystem.h" />

@@ -1,4 +1,5 @@
 #include "Registro.h"
+#include <iostream>
 
 
 namespace MindSpy
@@ -85,5 +86,151 @@ namespace MindSpy
 		}
 
 		return  true;
+	}
+
+	bool WinReg::RegQueryInfo(HKEY hRootKe,
+		LPWSTR subKey,
+		RegistryQueryInfoW* regInfo)
+	{
+		RtlSecureZeroMemory(regInfo, sizeof(RegistryQueryInfoW));
+
+		erroc = RegOpenKeyExW(hRootKe, subKey, 0, KEY_READ, &hRootKe);
+
+		if (erroc == ERROR_FILE_NOT_FOUND)return false;
+		regInfo->szClassName = MAX_ZONE_PATH;
+		RegQueryInfoKeyW(
+			hRootKe, // key handle 
+			regInfo->wcClassName, // buffer for class name 
+			&regInfo->szClassName, // size of class string 
+			0, // reserved 
+			&regInfo->nMaxSubKeyLen, // number of subkeys 
+			&regInfo->szMaxSubkey, // longest subkey size 
+			&regInfo->szMaxClassLen, // longest class string 
+			&regInfo->nValues, // number of values for this key 
+			&regInfo->szMaxValueNameLen, // longest value name 
+			&regInfo->szMaxValueLen, // longest value data 
+			&regInfo->szSecurityDescriptor, // security descriptor 
+			&regInfo->ftLastWriteTime); // last write time
+
+		//https://msdn.microsoft.com/en-us/library/windows/desktop/ms724256(v=vs.85).aspx
+		if (!regInfo->nMaxSubKeyLen)return false;
+
+		//RegCloseKey(hKey);
+	}
+
+	vstring WinReg::GetAllRegSubkeys(
+		HKEY hRootKey,
+		LPWSTR subKey)
+	{
+		RegistryQueryInfoW *querys = (RegistryQueryInfoW*)malloc(sizeof(RegistryQueryInfoW));
+
+
+		RegQueryInfo(hRootKey, subKey, querys);
+		erroc = RegOpenKeyExW(hRootKey, subKey, 0, KEY_READ | KEY_WOW64_32KEY, &hRootKey);
+
+		DWORD loop = 0;
+		DWORD szBuffer = 0;
+		LPWSTR  sbBuffer = new wchar_t[MAX_PATH];
+
+		vector<wstring> data;
+
+		data.resize(0);
+
+		do
+		{
+			szBuffer = MAX_VALUE_NAME;
+
+			LSTATUS res = RegEnumKeyExW(hRootKey, loop++, sbBuffer, &szBuffer,
+				NULL,
+				NULL,
+				NULL,
+				&querys->ftLastWriteTime);
+
+
+			if (!res)
+				data.push_back(wstring(subKey) + L"\\" + sbBuffer);
+
+		} while (querys->nMaxSubKeyLen > loop);
+		delete  sbBuffer;
+
+		int szBuffTmp = 0;
+		static LPWSTR tmp;
+		LPWSTR offset;
+
+		for (int i = 0; i < data.size(); i++)
+			szBuffTmp += data[i].length() + 1;
+
+
+
+		offset = tmp;
+		ZeroMemory(tmp, szBuffTmp);
+
+		for (int i = 0; i < data.size(); i++)
+		{
+			wcscpy(offset, data[i].c_str());
+			offset += data[i].length() + 1;
+
+		} delete tmp;
+
+
+
+		return data;
+	}
+
+	bool WinReg::GetAllRegSubkeysValue(HKEY hRootKey, LPWSTR subKey)
+	{
+		HKEY hkey;
+
+		RegistrySubKeyValueInfo  *buffer = new RegistrySubKeyValueInfo[2];
+
+		erroc = RegOpenKeyExW(hRootKey, subKey, 0, KEY_READ, &hkey);
+		if (erroc == NO_ERROR)
+		{
+			int couter = 0;
+			DWORD szValueBuffer = 0;
+			LPWSTR  valueBuffer = new wchar_t[MAX_PATH];
+
+			buffer->data.resize(0);
+			do
+			{
+				szValueBuffer = MAX_VALUE_NAME;
+
+				erroc = RegEnumValueW(hkey, couter, valueBuffer, &szValueBuffer, NULL, NULL, NULL, NULL);
+				buffer->data.push_back(wstring(valueBuffer));
+				couter++;
+			} while (erroc != ERROR_NO_MORE_ITEMS);
+
+			delete valueBuffer;
+
+			int szBuff = 0;
+			static LPWSTR BufferTmp;
+			LPWSTR dest;
+
+			for (size_t i = 0; i < buffer->data.size(); i++)
+			{
+				szBuff += buffer->data[i].length() + 1;
+			}
+				
+		
+
+			dest = BufferTmp;
+			ZeroMemory(BufferTmp, szBuff);
+
+			for (int i = 0; i < buffer->data[i].size(); i++)
+			{
+				wcscpy(dest, buffer->data[i].c_str());
+				dest += buffer->data[i].length() + 1;
+
+			} //delete BufferTmp;
+
+
+			for (size_t i = 0; i < buffer->data[i].size(); i++)
+			{
+				std::wcout << buffer->data[i].c_str();
+			}
+
+		}
+
+		return false;
 	}
 }

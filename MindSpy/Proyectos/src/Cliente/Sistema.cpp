@@ -30,6 +30,14 @@ namespace MindSpy
 		return NULL;
 	}
 
+	LPCWSTR Sistema::SoftwareInfo()
+	{
+		WinReg wmReg;
+		vstring subkeys;
+
+		return LPCWSTR(0);
+	}
+
 	void Sistema::ObtenerMAC()
 	{
 		//! Estrcutrura que va a alojar la informaci�n de los adaptadores. Es una lista enlazada

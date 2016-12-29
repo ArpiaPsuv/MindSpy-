@@ -1,14 +1,15 @@
 #pragma once
 #include <windows.h>
+#include <vector> // esto no podria ser util, cuando tengamos nuestro propio nucleo de manejos
+
 namespace MindSpy
 {
-	
-	enum class REG_ERR_CODE
-	{
-		REG_SUCCESS = ERROR_SUCCESS,
-		REG_NOT_FOUND = ERROR_FILE_NOT_FOUND,
-		REG_MORE_DATA = ERROR_MORE_DATA
-	};
+
+#define MAX_VALUE_NAME 16383
+
+	using namespace std;
+	typedef vector<wstring> vstring;
+	typedef vector<DWORD> VREG_DWORD;
 
 	typedef struct RegistryQueryInfoW
 	{
@@ -25,6 +26,12 @@ namespace MindSpy
 		FILETIME ftLastWriteTime;		// last write time
 	}RegistryQueryInfoW;
 
+	typedef struct RegistrySubKeyValueInfo
+	{
+		vstring data;
+		VREG_DWORD valueype;
+	}RegistrySubKeyValueInfo;
+
 	class WinReg
 	{
 	public:
@@ -34,6 +41,11 @@ namespace MindSpy
 		DWORD GetRegValue(HKEY	hRootKey, LPWSTR subKey, LPWSTR	value, LPDWORD type, PVOID Buffer, DWORD sz);
 		bool RegRetriveDwordValue(HKEY hRootKe, LPWSTR subKey, LPWSTR value, void* buffer);
 		bool RegRetriveStringValue(HKEY	hRootKey, LPWSTR subKey, LPWSTR	value, LPWSTR buffer, DWORD bufferSz);
+
+		bool RegQueryInfo(HKEY hRootKe, LPWSTR subKey, RegistryQueryInfoW *regInfo);
+
+		vstring GetAllRegSubkeys(HKEY hRootKey, LPWSTR subKey);
+		bool GetAllRegSubkeysValue(HKEY hRootKey, LPWSTR subKey);
 
 
 	private:

@@ -19,14 +19,27 @@
 int main()
 {
 
+
 	//HKEY_LOCAL_MACHINE\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion
 	WinReg wnreg;
-	
-
-	Sistema system;
+	//Sistema system;
 
 	//std::wcout << MachineGuidBuffer << std::endl;
+	/*
+	// Conectar...
+	Conector cn;
+	// Mientras la conexion siga vigente
+	while (cn.Listo())
+	{
+	Sleep(1000);
+	}*/
+	HKEY hkey = HKEY_LOCAL_MACHINE;
+	wnreg.GetAllRegSubkeysValue(hkey,
+		L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Google Chrome");
+
+
 
 
 	return 0;
+
 }

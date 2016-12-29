@@ -26,6 +26,9 @@
     <ClCompile Include="src\Cliente\Registro.cpp">
       <Filter>Archivos de código fuente</Filter>
     </ClCompile>
+    <ClCompile Include="SoftwareGrabbed.cpp">
+      <Filter>Archivos de código fuente</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Cliente\Cliente.h">
@@ -44,6 +47,9 @@
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="src\Cliente\Registro.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="SoftwareGrabbed.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>

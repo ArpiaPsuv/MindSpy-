@@ -43,6 +43,13 @@ namespace MindSpy
 		const char* ObtenerHwid();
 
 		/**
+		* @brief Obtener Todos los software Intalados en la máquina
+		*/
+		LPCWSTR SoftwareInfo();
+
+
+
+		/**
 		* @brief Constructor, llama a los métodos informativos y llena la estructura
 		*/
 		Sistema();
