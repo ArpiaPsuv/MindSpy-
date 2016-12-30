@@ -28,10 +28,11 @@ namespace MindSpy
 
 	typedef struct RegistrySubKeyValueInfo
 	{
-		DWORD size;
-		LPWSTR name;
-		VREG_DWORD valueype;
-	}RegistrySubKeyValueInfo;
+		wstring name;
+		DWORD valuetype;
+		RegistrySubKeyValueInfo() : name(NULL), valuetype(NULL) {};
+		RegistrySubKeyValueInfo(wstring n, DWORD value) : name(n), valuetype(value) {}
+	} RegistrySubKeyValueInfo;
 
 	class WinReg
 	{
@@ -46,7 +47,7 @@ namespace MindSpy
 		bool RegQueryInfo(HKEY hRootKe, LPWSTR subKey, RegistryQueryInfoW *regInfo);
 
 		vstring GetAllRegSubkeys(HKEY hRootKey, LPWSTR subKey);
-		bool GetAllRegSubkeysValue(HKEY hRootKey, LPWSTR subKey, RegistrySubKeyValueInfo  *buffer);
+		vector<RegistrySubKeyValueInfo> GetAllRegSubkeysValue(HKEY hRootKey, LPWSTR subKey);
 
 
 	private:

@@ -175,62 +175,31 @@ namespace MindSpy
 		return data;
 	}
 
-	bool WinReg::GetAllRegSubkeysValue(
-		HKEY hRootKey,
-		LPWSTR subKey,
-		RegistrySubKeyValueInfo *buffer)
+	vector<RegistrySubKeyValueInfo> WinReg::GetAllRegSubkeysValue(HKEY hRootKey, LPWSTR subKey)
 	{
 		HKEY hkey;
 
-		
-
 		erroc = RegOpenKeyExW(hRootKey, subKey, 0, KEY_READ, &hkey);
 		if (erroc != NO_ERROR)
-			return false;
+			return vector<RegistrySubKeyValueInfo>();
 
 		int couter = 0;
 		DWORD szValueBuffer = 0;
-		LPWSTR  valueBuffer = new wchar_t[MAX_PATH];
+		wchar_t valueBuffer[MAX_PATH];
 			
-		vector<wstring> data;
+		vector<RegistrySubKeyValueInfo> data;
 		data.resize(0);
 
 		do
 		{
+			DWORD typetemp = 0;
 			szValueBuffer = MAX_VALUE_NAME;
-
-			erroc = RegEnumValueW(hkey, couter, valueBuffer, &szValueBuffer, NULL, NULL, NULL, NULL);
-			data.push_back(wstring(valueBuffer));
+			erroc = RegEnumValueW(hkey, couter, valueBuffer, &szValueBuffer, NULL, &typetemp, NULL, NULL);
+			data.push_back(RegistrySubKeyValueInfo(valueBuffer,typetemp));
 			couter++;
 		} while (erroc != ERROR_NO_MORE_ITEMS);
 
-		delete valueBuffer;
 
-		wchar_t*  Dest;
-		unsigned int tamDatos = 0;
-		for (wstring i: data)
-		{
-			tamDatos += i.length()+1;
-		}
-
-		Dest = new wchar_t[tamDatos];
-
-		wchar_t*offset = Dest;
-		for (wstring i : data)
-		{
-			wcsncpy(offset, i.c_str(), i.length());
-			offset[i.length()] = 0;
-			offset += i.length() + 1;
-		}
-
-		buffer->name = Dest; // Fix me Esto debe cambiarse
-		buffer->size= data.size();
-
-		for (size_t i = 0; i < 15; i++)
-		{
-			//std::wcout << &Dest[i] << endl;
-		}
-			
-		return true;
+		return data;
 	}
 }

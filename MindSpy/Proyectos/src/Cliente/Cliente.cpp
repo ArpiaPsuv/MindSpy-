@@ -34,21 +34,39 @@ int main()
 	Sleep(1000);
 	}*/
 	HKEY hkey = HKEY_LOCAL_MACHINE;
-	RegistrySubKeyValueInfo  buffer;
-	wnreg.GetAllRegSubkeysValue(hkey,
-		L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Google Chrome", &buffer);
+	vector<RegistrySubKeyValueInfo>  buffer = wnreg.GetAllRegSubkeysValue(hkey,
+		L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\EasyBCD");
 
-	wchar_t *hi;
-	DWORD i = 0;
-	int a;
-	for (hi = buffer.name; i < buffer.size; i++)
-	{
-		wcout << hi << std::endl;
-		a = wcslen(hi) + 1;
-		a *= 2;
-		hi += a;
+	for (RegistrySubKeyValueInfo i : buffer) {
+		wstring tipo = L"";
+		switch (i.valuetype)
+		{
+		case REG_NONE:   
+			tipo = L"No value type"; break;
+		case REG_SZ:    
+			tipo = L"Unicode nul terminated string"; break;
+		case REG_EXPAND_SZ:   
+			tipo = L"Unicode nul terminated string"; break;
+		case REG_BINARY:       
+			tipo = L"Free form binary"; break;
+		case REG_DWORD:        
+			tipo = L"32-bit number"; break;
+		case REG_DWORD_BIG_ENDIAN:    
+			tipo = L"32-bit number"; break;
+		case REG_LINK:                 
+			tipo = L"Symbolic Link (unicode)"; break;
+		case REG_MULTI_SZ:               
+			tipo = L"Multiple Unicode strings"; break;
+		case REG_RESOURCE_LIST:         
+			tipo = L"Resource list in the resource map"; break;
+		case REG_FULL_RESOURCE_DESCRIPTOR: 
+			tipo = L"Resource list in the hardware description"; break;
+		case REG_QWORD:                   
+			tipo = L"64-bit number"; break;
+		}
+		wcout << L"nombre: " << i.name << std::endl << L"Tipo: " << tipo << std::endl << std::endl;
+
 	}
-
 
 	return 0;
 
