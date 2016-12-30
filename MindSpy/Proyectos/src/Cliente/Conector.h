@@ -14,6 +14,7 @@
 #include "Sistema.h"
 #include "../Datos.h"
 #include "FileSystem.h"
+#include "Registro.h"
 // tamaño de buffer maximo
 #define MAX_BUFFER 4096
 // Comandos disponibles

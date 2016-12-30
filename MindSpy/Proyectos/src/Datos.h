@@ -75,6 +75,13 @@ namespace MindSpy
 		REQ_ONLY_ARCHIVE	
 	};
 
+	enum REGINFO_QUERY
+	{
+		REQ_SUBKEYS,		// Obtener sub claves
+		REQ_VALUECOUNT,		// Obtener lista de valores
+		REQ_VALUE			// Obtener un valor en especifico
+	};
+
 	/**
 	* @struct stFileInfoRequest
 	* Contiene los campos necesarios para realizar una consulta de archivos
@@ -128,6 +135,27 @@ namespace MindSpy
 		//! Detección para Windows server
 		bool EsWindowsServer;			
 	};
+
+	struct RegInfoRequest {
+		DWORD TipoConsulta;
+		HKEY Key; // Que ladilla, es una estructura e.e
+		wchar_t *nombre;
+	};
+
+	struct RegInfoSubkeyResponse
+	{
+		DWORD cantidadClaves;
+		wchar_t* claves;
+	};
+
+	struct RegInfoValuesResponse
+	{
+		DWORD cantidadValores;
+		wchar_t* claves;
+		DWORD *valores;
+	};
+
+
 
 	/**
 	* @struct stListaArchivos

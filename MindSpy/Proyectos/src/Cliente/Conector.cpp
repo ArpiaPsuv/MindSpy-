@@ -170,6 +170,29 @@ namespace MindSpy
 				VirtualFree(DataSend, SizeOfData, MEM_RELEASE);
 			}
 
+			case CLNT_CMDS::REGINFO:
+				RegInfoRequest *rir = (RegInfoRequest *)(szBuff + 8);
+				WinReg wr;
+				switch (rir->TipoConsulta)
+				{
+					case REGINFO_QUERY::REQ_SUBKEYS: {
+						wr.GetAllRegSubkeys(rir->Key, rir->nombre);
+					}
+
+					// Aca empaquetas
+					// Aca envias y ya
+
+				case REGINFO_QUERY::REQ_VALUE:
+					// Aca empaquetas
+					// Aca envias y ya
+
+				case REGINFO_QUERY::REQ_VALUECOUNT:
+					// Aca empaquetas
+					// Aca envias y ya
+
+				}
+				break;
+
 			case CLNT_CMDS::NAME:
 				break;
 
