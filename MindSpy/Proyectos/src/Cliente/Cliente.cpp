@@ -38,16 +38,16 @@ int main()
 	wnreg.GetAllRegSubkeysValue(hkey,
 		L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Google Chrome", &buffer);
 
-	LPWSTR hi;
+	wchar_t *hi;
 	DWORD i = 0;
-	for (hi = buffer.name ; i < 3; i++)
+	int a;
+	for (hi = buffer.name; i < buffer.size; i++)
 	{
-		hi += wcslen(buffer.name) + 1;
-	
 		wcout << hi << std::endl;
-	
+		a = wcslen(hi) + 1;
+		a *= 2;
+		hi += a;
 	}
-
 
 
 	return 0;

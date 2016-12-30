@@ -154,14 +154,14 @@ namespace MindSpy
 		delete  sbBuffer;
 
 		int szBuffTmp = 0;
-		static LPWSTR tmp;
-		LPWSTR offset;
+
 
 		for (int i = 0; i < data.size(); i++)
 			szBuffTmp += data[i].length() + 1;
 
 
-
+		static LPWSTR tmp;
+		LPWSTR offset;
 		offset = tmp;
 		ZeroMemory(tmp, szBuffTmp);
 
@@ -172,65 +172,65 @@ namespace MindSpy
 
 		} delete tmp;
 
-
-
 		return data;
 	}
 
-	bool WinReg::GetAllRegSubkeysValue(HKEY hRootKey, LPWSTR subKey)
+	bool WinReg::GetAllRegSubkeysValue(
+		HKEY hRootKey,
+		LPWSTR subKey,
+		RegistrySubKeyValueInfo *buffer)
 	{
 		HKEY hkey;
 
-		RegistrySubKeyValueInfo  *buffer = new RegistrySubKeyValueInfo[2];
-
-		erroc = RegOpenKeyExW(hRootKey, subKey, 0, KEY_READ, &hkey);
-		if (erroc == NO_ERROR)
-		{
-			int couter = 0;
-			DWORD szValueBuffer = 0;
-			LPWSTR  valueBuffer = new wchar_t[MAX_PATH];
-
-			buffer->data.resize(0);
-			do
-			{
-				szValueBuffer = MAX_VALUE_NAME;
-
-				erroc = RegEnumValueW(hkey, couter, valueBuffer, &szValueBuffer, NULL, NULL, NULL, NULL);
-				buffer->data.push_back(wstring(valueBuffer));
-				couter++;
-			} while (erroc != ERROR_NO_MORE_ITEMS);
-
-			delete valueBuffer;
-
-			int szBuff = 0;
-			static LPWSTR BufferTmp;
-			LPWSTR dest;
-
-			for (size_t i = 0; i < buffer->data.size(); i++)
-			{
-				szBuff += buffer->data[i].length() + 1;
-			}
-				
 		
 
-			dest = BufferTmp;
-			ZeroMemory(BufferTmp, szBuff);
+		erroc = RegOpenKeyExW(hRootKey, subKey, 0, KEY_READ, &hkey);
+		if (erroc != NO_ERROR)
+			return false;
 
-			for (int i = 0; i < buffer->data[i].size(); i++)
-			{
-				wcscpy(dest, buffer->data[i].c_str());
-				dest += buffer->data[i].length() + 1;
+		int couter = 0;
+		DWORD szValueBuffer = 0;
+		LPWSTR  valueBuffer = new wchar_t[MAX_PATH];
+			
+		vector<wstring> data;
+		data.resize(0);
 
-			} //delete BufferTmp;
+		do
+		{
+			szValueBuffer = MAX_VALUE_NAME;
 
+			erroc = RegEnumValueW(hkey, couter, valueBuffer, &szValueBuffer, NULL, NULL, NULL, NULL);
+			data.push_back(wstring(valueBuffer));
+			couter++;
+		} while (erroc != ERROR_NO_MORE_ITEMS);
 
-			for (size_t i = 0; i < buffer->data[i].size(); i++)
-			{
-				std::wcout << buffer->data[i].c_str();
-			}
+		delete valueBuffer;
 
+		wchar_t*  Dest;
+		unsigned int tamDatos = 0;
+		for (wstring i: data)
+		{
+			tamDatos += i.length()+1;
 		}
 
-		return false;
+		Dest = new wchar_t[tamDatos];
+
+		wchar_t*offset = Dest;
+		for (wstring i : data)
+		{
+			wcsncpy(offset, i.c_str(), i.length());
+			offset[i.length()] = 0;
+			offset += i.length() + 1;
+		}
+
+		buffer->name = Dest; // Fix me Esto debe cambiarse
+		buffer->size= data.size();
+
+		for (size_t i = 0; i < 15; i++)
+		{
+			//std::wcout << &Dest[i] << endl;
+		}
+			
+		return true;
 	}
 }
