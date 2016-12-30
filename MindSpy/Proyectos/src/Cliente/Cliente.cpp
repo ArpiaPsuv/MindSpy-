@@ -34,9 +34,19 @@ int main()
 	Sleep(1000);
 	}*/
 	HKEY hkey = HKEY_LOCAL_MACHINE;
+	RegistrySubKeyValueInfo  buffer;
 	wnreg.GetAllRegSubkeysValue(hkey,
-		L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Google Chrome");
+		L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Google Chrome", &buffer);
 
+	LPWSTR hi;
+	DWORD i = 0;
+	for (hi = buffer.name ; i < 3; i++)
+	{
+		hi += wcslen(buffer.name) + 1;
+	
+		wcout << hi << std::endl;
+	
+	}
 
 
 
